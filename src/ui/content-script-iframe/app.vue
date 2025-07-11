@@ -4,7 +4,7 @@
 
     <!-- Basic usage -->
     <MonacoEditor v-model="code" :language="selectedLanguage" :theme="selectedTheme" height="300px" width="100%" />
-    Hiiii
+
 
     <!-- Controls -->
     <div class="controls">
