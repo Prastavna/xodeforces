@@ -1,0 +1,26 @@
+{
+  "name": "xodeforces",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Floating code editor for Codeforces problems",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview",
+    "type-check": "vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "monaco-editor": "^0.52.2",
+    "vue": "^3.5.17"
+  },
+  "devDependencies": {
+    "@crxjs/vite-plugin": "^2.0.2",
+    "@types/chrome": "^0.0.332",
+    "@vitejs/plugin-vue": "^6.0.0",
+    "@vue/tsconfig": "^0.7.0",
+    "typescript": "~5.8.3",
+    "vite": "^7.0.3",
+    "vue-tsc": "^2.2.12"
+  }
+}
