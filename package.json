@@ -11,12 +11,15 @@
     "type-check": "vue-tsc --noEmit"
   },
   "dependencies": {
+    "@nuxt/ui": "^3.2.0",
     "monaco-editor": "^0.52.2",
-    "vue": "^3.5.17"
+    "vue": "^3.5.17",
+    "vue-router": "4"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.2",
     "@types/chrome": "^0.0.332",
+    "@types/vue-router": "^2.0.0",
     "@vitejs/plugin-vue": "^6.0.0",
     "@vue/tsconfig": "^0.7.0",
     "typescript": "~5.8.3",

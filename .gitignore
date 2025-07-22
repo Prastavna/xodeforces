@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Nuxt
+auto-imports.d.ts
+components.d.ts

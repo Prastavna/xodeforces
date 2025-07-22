@@ -5,11 +5,12 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import * as monaco from 'monaco-editor'
+import { Languages } from '../constants/languages'
 
 // Props interface
 interface Props {
   modelValue?: string
-  language?: string
+  language?: Languages
   theme?: string
   height?: string
   width?: string
@@ -19,9 +20,9 @@ interface Props {
 // Props
 const props = withDefaults(defineProps<Props>(), {
   modelValue: '',
-  language: 'javascript',
+  language: Languages.JavaScript,
   theme: 'vs-dark',
-  height: '400px',
+  height: '100%',
   width: '100%',
   options: () => ({})
 })
@@ -33,7 +34,7 @@ const emit = defineEmits<{
 
 // Refs
 const editorContainer = ref<HTMLElement | null>(null)
-let editor: monaco.editor.IStandaloneCodeEditor | null = null
+let editor: monaco.editor.IStandaloneCodeEditor;
 
 // Initialize editor
 onMounted(() => {
@@ -62,7 +63,7 @@ onMounted(() => {
 
     // Resize editor when container size changes
     const resizeObserver = new ResizeObserver(() => {
-      editor?.layout()
+      editor.layout()
     })
     resizeObserver.observe(editorContainer.value)
   }
