@@ -2,7 +2,7 @@
   <div ref="editorContainer" class="monaco-editor-container"></div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import * as monaco from 'monaco-editor'
 
@@ -35,11 +35,11 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue', 'change', 'mounted'])
 
-const editorContainer = ref(null)
-let editor = null
+const editorContainer = ref<HTMLElement | null>(null)
+let editor: monaco.editor.IStandaloneCodeEditor | null = null
 
 // Default editor options with IntelliSense features enabled
-const defaultOptions = {
+const defaultOptions: monaco.editor.IStandaloneEditorConstructionOptions = {
   automaticLayout: true,
   minimap: { enabled: true },
   scrollBeyondLastLine: false,
@@ -54,7 +54,7 @@ const defaultOptions = {
   suggestOnTriggerCharacters: true,
   acceptSuggestionOnEnter: 'on',
   tabCompletion: 'on',
-  wordBasedSuggestions: true,
+  wordBasedSuggestions: "allDocuments",
   quickSuggestions: {
     other: true,
     comments: true,
@@ -70,7 +70,7 @@ const defaultOptions = {
   formatOnPaste: true,
   formatOnType: true,
   // Error detection
-  validate: true
+  // validate: true
 }
 
 const initMonaco = async () => {
@@ -131,7 +131,7 @@ const initMonaco = async () => {
   }
 
   // Merge options
-  const editorOptions = {
+  const editorOptions: monaco.editor.IStandaloneEditorConstructionOptions = {
     ...defaultOptions,
     ...props.options,
     value: props.modelValue,
@@ -144,7 +144,7 @@ const initMonaco = async () => {
 
   // Set up change listener
   editor.onDidChangeModelContent(() => {
-    const value = editor.getValue()
+    const value = editor!.getValue()
     emit('update:modelValue', value)
     emit('change', value)
   })
@@ -168,7 +168,7 @@ watch(() => props.modelValue, (newValue) => {
 
 watch(() => props.language, (newLanguage) => {
   if (editor) {
-    monaco.editor.setModelLanguage(editor.getModel(), newLanguage)
+    monaco.editor.setModelLanguage(editor.getModel()!, newLanguage)
   }
 })
 
@@ -191,7 +191,7 @@ onBeforeUnmount(() => {
 defineExpose({
   getEditor: () => editor,
   getValue: () => editor?.getValue(),
-  setValue: (value) => editor?.setValue(value),
+  setValue: (value: string) => editor?.setValue(value),
   focus: () => editor?.focus(),
   dispose: disposeEditor
 })

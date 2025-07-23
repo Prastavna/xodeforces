@@ -1,48 +1,32 @@
 <template>
-    <div class="controls h-12 flex items-center justify-between">
-        <div class="flex items-center gap-2">
-            <label>
-                Language:
-                <USelectMenu
-                    class="w-48"
-                    :modelValue="props.language" 
-                    arrow
-                    :items="Object.keys(Languages)"
-                    @update:modelValue="emit('languageChange', $event)"
-                />
-            </label>
+    <div class="header">
+        <div class="controls">
+            <select v-bind:value="editorConfig.language"
+                @change="editorConfig.changeLanguage(($event.target as HTMLSelectElement).value)">
+                <option v-for="language in languages" :key="language.value" :value="language.value">
+                    {{ language.label }}
+                </option>
+            </select>
 
-            <label>
-                Theme:
-                <USelectMenu
-                    class="w-32"
-                    :modelValue="props.theme"
-                    arrow
-                    :items="['vs', 'vs-dark', 'hc-black']"
-                    @update:modelValue="emit('themeChange', $event)"
-                    />
-            </label>
-        </div>
+            <select v-bind:value="editorConfig.theme"
+                @change="editorConfig.changeTheme(($event.target as HTMLSelectElement).value)">
+                <option v-for="theme in themes" :key="theme.value" :value="theme.value">
+                    {{ theme.label }}
+                </option>
+            </select>
 
-        <div class="flex items-center gap-2 mr-4">
-            <UButton @click="clearEditor" variant="ghost" color="error" icon="heroicons:trash" />
-        </div>
-
-        <div>
-            {{ props.language }} | {{ props.theme }}
+            <button @click="editorConfig.formatCode">Format Code</button>
+            <button @click="editorConfig.resetCode">Reset</button>
+            <button @click="editorConfig.submitCode">Submit</button>
         </div>
     </div>
 </template>
 
-
 <script setup lang="ts">
-const props = defineProps<{ language: Languages, theme: 'vs' | 'vs-dark' | 'hc-black' }>()
+import { useEditorConfig } from "../stores/editor-config";
+import { languages } from "../constants/languages";
+import { themes } from "../constants/themes";
 
-import { Languages } from '../constants/languages'
+const editorConfig = useEditorConfig();
 
-const emit = defineEmits(['clearEditor', 'languageChange', 'themeChange'])
-
-const clearEditor = () => {
-    emit('clearEditor')
-}
 </script>

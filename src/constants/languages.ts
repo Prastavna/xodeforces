@@ -1,108 +1,80 @@
-export enum Languages {
-  C = 'c',
-  'C++' = 'cpp',
-  JavaScript = 'javascript',
-  Python = 'python',
-  'C#' = 'c#',
-  Java = 'java',
-  Go = 'go',
-  Rust = 'rust',
-  TypeScript = 'typescript',
-  Kotlin = 'kotlin',
-  Swift = 'swift',
-  Ruby = 'ruby',
-  PHP = 'php',
-  Perl = 'perl',
-  Scala = 'scala',
-}
-export const samples: Record<Languages, string> = {
-  [Languages.C]: `#include <stdio.h>
 
-int main() {
-    printf("Hello from Monaco Editor!\n");
-    return 0;
-}`,
-
-  [Languages['C++']]: `#include <iostream>
-
-int main() {
-    std::cout << "Hello from Monaco Editor!" << std::endl;
-    return 0;
-}`,
-
-  [Languages.JavaScript]: `function fibonacci(n) {
-    if (n <= 1) return n;
-    return fibonacci(n - 1) + fibonacci(n - 2);
-  }`,
-
-  [Languages.Python]: `def fibonacci(n):
-    if n <= 1:
-        return n
-    return fibonacci(n - 1) + fibonacci(n - 2)`,
-
-  [Languages['C#']]: `using System;
-
-public class Program
-{
-    public static void Main()
-    {
-        Console.WriteLine("Hello from Monaco Editor!");
-    }
-}`,
-
-  [Languages.Java]: `public class Main {
-    public static void main(String[] args) {
-        System.out.println("Hello from Monaco Editor!");
-    }
-}`,
-
-  [Languages.Go]: `package main
-
-import "fmt"
-
-func main() {
-    fmt.Println("Hello from Monaco Editor!")
-}`,
-
-  [Languages.Rust]: `fn main() {
-    println!("Hello from Monaco Editor!");
-}`,
-
-  [Languages.TypeScript]: `function fibonacci(n: number): number {
-    if (n <= 1) return n;
-    return fibonacci(n - 1) + fibonacci(n - 2);
-}`,
-
-  [Languages.Kotlin]: `fun fibonacci(n: Int): Int {
-    if (n <= 1) return n
-    return fibonacci(n - 1) + fibonacci(n - 2)
-}`,
-
-  [Languages.Swift]: `func fibonacci(_ n: Int) -> Int {
-    if n <= 1 { return n }
-    return fibonacci(n - 1) + fibonacci(n - 2)
-}`,
-
-  [Languages.Ruby]: `def fibonacci(n)
-    if n <= 1
-        return n
-    return fibonacci(n - 1) + fibonacci(n - 2)
-end`,
-
-  [Languages.PHP]: `function fibonacci($n) {
-    if ($n <= 1) return $n;
-    return fibonacci($n - 1) + fibonacci($n - 2);
-}`,
-
-  [Languages.Perl]: `sub fibonacci {
-    my ($n) = @_;
-    return $n if $n <= 1;
-    return fibonacci($n - 1) + fibonacci($n - 2);
-}`,
-
-  [Languages.Scala]: `def fibonacci(n: Int): Int = {
-    if (n <= 1) return n
-    return fibonacci(n - 1) + fibonacci(n - 2)
-}`,
-
-}
+export const languages = {
+  javascript: {
+    label: "JavaScript",
+    value: "javascript",
+    sample: `console.log("Hello World");`,
+    extension: ".js",
+    mime: "text/javascript",
+  },
+  typescript: {
+    label: "TypeScript",
+    value: "typescript",
+    sample: `console.log("Hello World");`,
+    extension: ".ts",
+    mime: "text/typescript",
+  },
+  python: {
+    label: "Python",
+    value: "python",
+    sample: `print("Hello World")`,
+    extension: ".py",
+    mime: "text/python",
+  },
+  java: {
+    label: "Java",
+    value: "java",
+    sample: `public class HelloWorld {\n\tpublic static void main(String[] args) {\n\t\tSystem.out.println("Hello World");\n\t}\n}`,    
+    extension: ".java",
+    mime: "text/java",
+  },
+  csharp: {
+    label: "C#",
+    value: "csharp",
+    sample: `Console.WriteLine("Hello World");`,
+    extension: ".cs",
+    mime: "text/csharp",
+  },
+  php: {
+    label: "PHP",
+    value: "php",
+    sample: `echo "Hello World";`,
+    extension: ".php",
+    mime: "text/php",
+  },
+  sql: {
+    label: "SQL",
+    value: "sql",
+    sample: `SELECT * FROM users;`,
+    extension: ".sql",
+    mime: "text/sql",
+  },
+  go: {
+    label: "Go",
+    value: "go",
+    sample: `import "fmt"\nfunc main() {\n\tfmt.Println("Hello World")\n}`,    
+    extension: ".go",
+    mime: "text/go",
+  },
+  rust: {
+    label: "Rust",
+    value: "rust",
+    sample: `println!("Hello World");`,
+    extension: ".rs",
+    mime: "text/rust",
+  },
+  cpp: {
+    label: "C++",
+    value: "cpp",
+    sample: `#include <iostream> \nusing namespace std;\nint main() {\n\tcout << "Hello, Monaco Editor!" << endl;\n\treturn 0;\n}`,
+    extension: ".cpp",
+    mime: "text/cpp",
+  },
+  c: {
+    label: "C",
+    value: "c",
+    sample: `#include <stdio.h>\nint main() {\n\tprintf("Hello, Monaco Editor!");\n\treturn 0;\n}`,
+    extension: ".c",
+    mime: "text/c",
+  },
+};
