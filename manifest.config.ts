@@ -26,11 +26,13 @@ export default {
         default_popup: "src/ui/action-popup/index.html"
     },
     content_security_policy: {
-        extension_pages: "script-src 'self' http://localhost:5173; connect-src 'self' http://localhost:5173; object-src 'self'"
+        extension_pages: "script-src 'self' http://localhost:5173; worker-src 'self' http://localhost:5173; connect-src 'self' ws://localhost:5173 http://localhost:5173; object-src 'self'; style-src 'self' 'unsafe-inline';"
     },
     web_accessible_resources: [{
         resources: [
-            'src/ui/content-script-iframe/index.html'
+            "src/ui/content-script-iframe/index.html",
+            "*.worker.js",
+            "monaco-editor/**/*"
         ],
         matches: ['https://codeforces.com/*'],
         use_dynamic_url: true

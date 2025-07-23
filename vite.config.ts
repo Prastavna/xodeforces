@@ -13,6 +13,9 @@ export default defineConfig({
       manifest,
     })
   ],
+  optimizeDeps: {
+    include: ['monaco-editor']
+  },
   server: {
     port: 5173,
     strictPort: true,

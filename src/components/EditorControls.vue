@@ -27,6 +27,10 @@
         <div class="flex items-center gap-2 mr-4">
             <UButton @click="clearEditor" variant="ghost" color="error" icon="heroicons:trash" />
         </div>
+
+        <div>
+            {{ props.language }} | {{ props.theme }}
+        </div>
     </div>
 </template>
 
