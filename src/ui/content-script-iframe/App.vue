@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full">
+  <div class="pl-1 border-l-2 border-gray-300 h-full">
     <Home />
   </div>
 </template>

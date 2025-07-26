@@ -18,7 +18,7 @@
   
   <script setup lang="ts">
   import * as monaco from 'monaco-editor'
-  import { ref, reactive } from 'vue'
+  import { ref } from 'vue'
   import MonacoEditor from '../../../components/MonacoEditor.vue'
   import EditorControls from '../../../components/EditorControls.vue'
   import { useEditorConfig } from '../../../stores/editor-config';
@@ -28,36 +28,38 @@
 
   const editorConfig = useEditorConfig();
 
-  const editorOptions = reactive({
-    fontSize: 14,
-    wordWrap: 'on',
-    lineNumbers: 'on',
-    minimap: { enabled: true },
-    scrollBeyondLastLine: false,
-    automaticLayout: true,
-    tabSize: 2,
-    insertSpaces: true,
-    detectIndentation: false,
-    // Enhanced IntelliSense options
-    suggestOnTriggerCharacters: true,
-    acceptSuggestionOnEnter: 'on',
-    tabCompletion: 'on',
-    quickSuggestions: {
-      other: true,
-      comments: true,
-      strings: true
-    },
-    parameterHints: {
-      enabled: true,
-      cycle: true
-    },
-    hover: {
-      enabled: true,
-      delay: 300
-    },
-    formatOnPaste: true,
-    formatOnType: true
-  })
+  // const editorOptions = reactive({
+  //   fontSize: 14,
+  //   wordWrap: 'on',
+  //   lineNumbers: 'on',
+  //   minimap: { enabled: true },
+  //   scrollBeyondLastLine: false,
+  //   automaticLayout: true,
+  //   tabSize: 2,
+  //   insertSpaces: true,
+  //   detectIndentation: false,
+  //   // Enhanced IntelliSense options
+  //   suggestOnTriggerCharacters: true,
+  //   acceptSuggestionOnEnter: 'on',
+  //   tabCompletion: 'on',
+  //   quickSuggestions: {
+  //     other: true,
+  //     comments: true,
+  //     strings: true
+  //   },
+  //   parameterHints: {
+  //     enabled: true,
+  //     cycle: true
+  //   },
+  //   hover: {
+  //     enabled: true,
+  //     delay: 300
+  //   },
+  //   formatOnPaste: true,
+  //   formatOnType: true
+  // })
+
+  const editorOptions = editorConfig.editorOptions;
 
   const onCodeChange = (newCode: string) => {
     editorConfig.code = newCode

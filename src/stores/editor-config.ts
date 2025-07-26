@@ -1,12 +1,22 @@
 import { defineStore } from "pinia";
 import { languages } from "../constants/languages";
 import * as monaco from 'monaco-editor'
+import { storage } from "../services/storage";
+
+const getSampleCode = () => {
+    const language = storage.local.get("language");
+    const sampleCode = languages[language as keyof typeof languages].sample;
+    if (!sampleCode) {
+        return ""
+    }
+    return sampleCode;
+}
 
 export const useEditorConfig = defineStore("editor-config", {
     state: () => ({
-        language: "javascript",
-        theme: "vs-dark",
-        code: languages.javascript.sample,
+        language: storage.local.get("language") || "javascript",
+        theme: storage.local.get("theme") || "vs-dark",
+        code: getSampleCode(),
         editorInstance: null as monaco.editor.IStandaloneCodeEditor | null,
         editorOptions: {
             automaticLayout: true,
@@ -46,10 +56,12 @@ export const useEditorConfig = defineStore("editor-config", {
     actions: {
         changeLanguage(language: string) {
             this.language = language;
-            this.code = languages[language as keyof typeof languages].sample;
+            storage.local.set("language", language);
+            this.code = getSampleCode();
         },
         changeTheme(theme: string) {
             this.theme = theme;
+            storage.local.set("theme", theme);
         },
         setEditorInstance(editorInstance: monaco.editor.IStandaloneCodeEditor) {
             this.editorInstance = editorInstance;
