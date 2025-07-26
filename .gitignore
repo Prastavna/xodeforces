@@ -8,8 +8,6 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-dist
-dist-ssr
 *.local
 
 # Editor directories and files
@@ -26,3 +24,8 @@ dist-ssr
 # Nuxt
 auto-imports.d.ts
 components.d.ts
+
+# Build
+dist
+dist-ssr
+*.zip

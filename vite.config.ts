@@ -4,6 +4,11 @@ import { crx } from '@crxjs/vite-plugin'
 import manifest from './manifest.config.ts'
 import ui from '@nuxt/ui/vite'
 
+import { resolve } from "path"
+
+const IS_DEV = process.env.NODE_ENV === "development"
+console.log(IS_DEV)
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -35,5 +40,12 @@ export default defineConfig({
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
       'Access-Control-Allow-Headers': '*',
     }
-  }
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        iframe: resolve(__dirname, "src/ui/content-script-iframe/index.html"),
+      },
+    },
+  },
 })

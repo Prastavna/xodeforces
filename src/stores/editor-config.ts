@@ -5,6 +5,9 @@ import { storage } from "../services/storage";
 
 const getSampleCode = () => {
     const language = storage.local.get("language");
+    if (!language) {
+        return languages.javascript.sample;
+    }
     const sampleCode = languages[language as keyof typeof languages].sample;
     if (!sampleCode) {
         return ""
