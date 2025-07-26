@@ -1,11 +1,12 @@
 
 import { createApp } from "vue"
-import App from "./app.vue"
+import App from "./App.vue"
 import ui from '@nuxt/ui/vue-plugin'
 import { createRouter, createWebHistory } from 'vue-router'
 import "./index.css"
 import { createPinia } from 'pinia'
 
+// import 'monaco-editor/esm/vs/language/typescript/monaco.contribution';
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
 import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'

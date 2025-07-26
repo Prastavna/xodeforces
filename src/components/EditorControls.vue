@@ -1,23 +1,31 @@
 <template>
     <div class="header">
-        <div class="controls">
-            <select v-bind:value="editorConfig.language"
-                @change="editorConfig.changeLanguage(($event.target as HTMLSelectElement).value)">
-                <option v-for="language in languages" :key="language.value" :value="language.value">
-                    {{ language.label }}
-                </option>
-            </select>
+        <div class="controls flex justify-between">
+            <div class="flex gap-2">
+                <USelect
+                    v-model="editorConfig.language"
+                    @update:modelValue="editorConfig.changeLanguage"
+                    :items="languageItems"
+                    value-attribute="value"
+                    label-attribute="label"
+                    class="w-32"
+                />
 
-            <select v-bind:value="editorConfig.theme"
-                @change="editorConfig.changeTheme(($event.target as HTMLSelectElement).value)">
-                <option v-for="theme in themes" :key="theme.value" :value="theme.value">
-                    {{ theme.label }}
-                </option>
-            </select>
+                <USelect
+                    v-model="editorConfig.theme"
+                    @update:modelValue="editorConfig.changeTheme"
+                    :items="themeItems"
+                    value-attribute="value"
+                    label-attribute="label"
+                    class="w-24"
+                />
+            </div>
 
-            <button @click="editorConfig.formatCode">Format Code</button>
-            <button @click="editorConfig.resetCode">Reset</button>
-            <button @click="editorConfig.submitCode">Submit</button>
+            <div class="flex gap-2">
+                <!-- <button @click="editorConfig.formatCode">Format Code</button> -->
+                <UButton @click="editorConfig.resetCode">Reset</UButton>
+                <UButton @click="editorConfig.submitCode">Submit</UButton>
+            </div>
         </div>
     </div>
 </template>
@@ -28,5 +36,14 @@ import { languages } from "../constants/languages";
 import { themes } from "../constants/themes";
 
 const editorConfig = useEditorConfig();
+const languageItems = Object.values(languages).map((language) => ({
+    value: language.value,
+    label: language.label
+}));
+
+const themeItems = Object.values(themes).map((theme) => ({
+    value: theme.value,
+    label: theme.label
+}));
 
 </script>

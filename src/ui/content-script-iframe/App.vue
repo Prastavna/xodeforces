@@ -1,5 +1,5 @@
 <template>
-  <div class="app h-screen sticky top-0">
+  <div class="h-full">
     <Home />
   </div>
 </template>

@@ -4,7 +4,8 @@ const src = chrome.runtime.getURL("src/ui/content-script-iframe/index.html")
 
 const codeforcesBody = document.getElementById("body");
 
-const submitBtn = document.getElementById("sidebarSubmitButton")
+const submitBtn = document.getElementById("sidebarSubmitButton");
+
 if (submitBtn) {
   const button = document.createElement("input")
   button.type = "button"
@@ -58,6 +59,27 @@ function createIframe() {
 }
 
 createIframe();
+
+const attachFileToInput = (file: File) => {
+  const fileInput = document.querySelector('#sidebar form input[type=file]') as HTMLInputElement;
+
+  if (!fileInput) {
+    console.error('Input element not found');
+    return;
+  }
+
+  const dataTransfer = new DataTransfer();
+  dataTransfer.items.add(file);
+  fileInput.files = dataTransfer.files;
+
+  fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+}
+
+self.addEventListener("message", (event) => {
+  if (event.data.type === "attachFileToInput") {
+    attachFileToInput(event.data.file)
+  }
+})
 
 self.onerror = function (message, source, lineno, colno, error) {
   console.info("Error: " + message)

@@ -31,6 +31,8 @@ export default {
     web_accessible_resources: [{
         resources: [
             "src/ui/content-script-iframe/index.html",
+            "src/ui/content-script-iframe/index.ts",
+            "src/ui/content-script-iframe/index.css",
             "*.worker.js",
             "monaco-editor/**/*"
         ],

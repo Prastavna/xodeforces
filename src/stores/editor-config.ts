@@ -38,7 +38,9 @@ export const useEditorConfig = defineStore("editor-config", {
                 delay: 300
             },
             formatOnPaste: true,
-            formatOnType: true
+            formatOnType: true,
+            tabSize: 4,
+            insertSpaces: true
         } satisfies monaco.editor.IStandaloneEditorConstructionOptions
     }),
     actions: {
@@ -61,10 +63,6 @@ export const useEditorConfig = defineStore("editor-config", {
             this.code = "";
         },
         submitCode() {
-            if (this.editorInstance) {
-                this.code = this.editorInstance.getValue()
-            }
-
             const extension = languages[this.language as keyof typeof languages].extension;
             const fullFilename = "code" + extension;
 
@@ -72,20 +70,10 @@ export const useEditorConfig = defineStore("editor-config", {
 
             const file = new File([blob], fullFilename, { type: 'text/plain' });
 
-            const fileInput = document.querySelector('input[name="sourceFile"]') as HTMLInputElement;
-
-            if (!fileInput) {
-                console.error('Input element with name="sourceFile" not found');
-                return null;
-            }
-
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file);
-            fileInput.files = dataTransfer.files;
-
-            fileInput.dispatchEvent(new Event('change', { bubbles: true }));
-
-            console.log(`Created and attached file: ${fullFilename}`);
+            self.parent.postMessage({
+                type: "attachFileToInput",
+                file
+            }, "*");
         }
     },
 });

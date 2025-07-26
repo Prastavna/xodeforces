@@ -5,6 +5,9 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import * as monaco from 'monaco-editor'
+import { useEditorConfig } from '../stores/editor-config'
+
+const editorConfig = useEditorConfig()
 
 const props = defineProps({
   modelValue: {
@@ -13,11 +16,11 @@ const props = defineProps({
   },
   language: {
     type: String,
-    default: 'javascript'
+    default: ''
   },
   theme: {
     type: String,
-    default: 'vs-dark'
+    default: ''
   },
   options: {
     type: Object,
@@ -181,6 +184,10 @@ watch(() => props.theme, (newTheme) => {
 onMounted(async () => {
   await nextTick()
   await initMonaco()
+
+  if(editor) {
+    editorConfig.setEditorInstance(editor)
+  }
 })
 
 onBeforeUnmount(() => {
