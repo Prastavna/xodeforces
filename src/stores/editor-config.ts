@@ -19,7 +19,7 @@ export const useEditorConfig = defineStore("editor-config", {
     state: () => ({
         language: storage.local.get("language") || "javascript",
         theme: storage.local.get("theme") || "vs-dark",
-        code: getSampleCode(),
+        code: storage.session.get("code") || getSampleCode(),
         editorInstance: null as monaco.editor.IStandaloneCodeEditor | null,
         editorOptions: {
             automaticLayout: true,
@@ -69,6 +69,10 @@ export const useEditorConfig = defineStore("editor-config", {
         setEditorInstance(editorInstance: monaco.editor.IStandaloneCodeEditor) {
             this.editorInstance = editorInstance;
         },
+        onCodeChange(code: string) {
+            this.code = code;
+            storage.session.set("code", code);
+        },
         formatCode() {
             if (this.editorInstance) {
                 this.editorInstance.getAction('editor.action.formatDocument')?.run()
@@ -76,6 +80,7 @@ export const useEditorConfig = defineStore("editor-config", {
         },
         resetCode() {
             this.code = "";
+            storage.session.set("code", "");
         },
         submitCode() {
             const extension = languages[this.language as keyof typeof languages].extension;

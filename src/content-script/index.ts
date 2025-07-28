@@ -23,6 +23,7 @@ if (submitBtn) {
     const iframe = createIframe();
     if (iframe && codeforcesBody) {
       const isVisible = iframe.style.display !== 'none';
+      button.value = isVisible ? "Open Editor" : "Close Editor";
       document.body.style.margin = isVisible ? '0' : 'unset';
       codeforcesBody.style.margin = isVisible ? '0 auto' : 'unset';
       codeforcesBody.style.overflowY = isVisible ? 'auto' : 'hidden';

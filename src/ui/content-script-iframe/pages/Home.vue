@@ -62,7 +62,7 @@
   const editorOptions = editorConfig.editorOptions;
 
   const onCodeChange = (newCode: string) => {
-    editorConfig.code = newCode
+    editorConfig.onCodeChange(newCode)
   }
   
   
