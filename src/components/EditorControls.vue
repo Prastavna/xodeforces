@@ -9,6 +9,7 @@
                     value-attribute="value"
                     label-attribute="label"
                     class="w-32"
+                    icon="i-heroicons-language"
                 />
 
                 <USelect
@@ -17,14 +18,14 @@
                     :items="themeItems"
                     value-attribute="value"
                     label-attribute="label"
-                    class="w-24"
+                    class="w-32"
                 />
             </div>
 
-            <div class="flex gap-2">
+            <div class="flex gap-2 pr-4">
                 <!-- <button @click="editorConfig.formatCode">Format Code</button> -->
-                <UButton @click="editorConfig.resetCode">Reset</UButton>
-                <UButton @click="editorConfig.submitCode">Submit</UButton>
+                <UButton @click="editorConfig.resetCode" icon="i-heroicons-trash" variant="ghost" color="error"></UButton>
+                <UButton @click="editorConfig.submitCode" icon="i-heroicons-paper-clip">Attach File</UButton>
             </div>
         </div>
     </div>
