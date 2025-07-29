@@ -2,7 +2,7 @@
   "name": "xodeforces",
   "private": true,
   "version": "0.0.1",
-  "description": "Floating code editor for Codeforces problems",
+  "description": "Web Code editor for Codeforces problems",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@nuxt/ui": "^3.2.0",
-    "@types/node": "^24.1.0",
     "monaco-editor": "^0.52.2",
     "pinia": "^3.0.3",
     "vue": "^3.5.17",
@@ -21,6 +20,7 @@
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.2",
     "@types/chrome": "^0.0.332",
+    "@types/node": "^24.1.0",
     "@types/vue-router": "^2.0.0",
     "@vitejs/plugin-vue": "^6.0.0",
     "@vue/tsconfig": "^0.7.0",
