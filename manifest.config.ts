@@ -13,10 +13,6 @@ export default {
         "48": "icon48.png",
         "128": "icon128.png"
     },
-    permissions: [
-        "activeTab",
-        "scripting"
-    ],
     host_permissions: [
         "https://codeforces.com/*",
     ],
@@ -32,7 +28,7 @@ export default {
     //     default_popup: "src/ui/action-popup/index.html"
     // },
     content_security_policy: {
-        extension_pages: "script-src 'self' http://localhost:5173; worker-src 'self' http://localhost:5173; connect-src 'self' ws://localhost:5173 http://localhost:5173; object-src 'self'; style-src 'self' 'unsafe-inline';"
+        extension_pages: "script-src 'self' http://localhost:5173; worker-src 'self' http://localhost:5173; connect-src 'self' https://api.iconify.design https://api.simplesvg.com ws://localhost:5173 http://localhost:5173; object-src 'self'; style-src 'self' 'unsafe-inline';"
     },
     web_accessible_resources: [{
         resources: [
