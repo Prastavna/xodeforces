@@ -1,18 +1,16 @@
+import { createApp } from "vue";
+import App from "./app.vue";
 
-import { createApp } from "vue"
-import App from "./app.vue"
+const app = createApp(App);
 
-const app = createApp(App)
+app.mount("#app");
 
-app.mount("#app")
+export default app;
 
-export default app
-
-
-self.onerror = function (message, source, lineno, colno, error) {
-  console.info("Error: " + message)
-  console.info("Source: " + source)
-  console.info("Line: " + lineno)
-  console.info("Column: " + colno)
-  console.info("Error object: " + error)
-}
+self.onerror = (message, source, lineno, colno, error) => {
+	console.info("Error: " + message);
+	console.info("Source: " + source);
+	console.info("Line: " + lineno);
+	console.info("Column: " + colno);
+	console.info("Error object: " + error);
+};

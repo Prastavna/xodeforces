@@ -1,31 +1,32 @@
 {
-  "name": "xodeforces",
-  "private": true,
-  "version": "0.0.1",
-  "description": "Web Code editor for Codeforces problems",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc -b && vite build",
-    "preview": "vite preview",
-    "type-check": "vue-tsc --noEmit"
-  },
-  "dependencies": {
-    "@nuxt/ui": "^3.2.0",
-    "monaco-editor": "^0.52.2",
-    "pinia": "^3.0.3",
-    "vue": "^3.5.17",
-    "vue-router": "4"
-  },
-  "devDependencies": {
-    "@crxjs/vite-plugin": "^2.0.2",
-    "@types/chrome": "^0.0.332",
-    "@types/node": "^24.1.0",
-    "@types/vue-router": "^2.0.0",
-    "@vitejs/plugin-vue": "^6.0.0",
-    "@vue/tsconfig": "^0.7.0",
-    "typescript": "~5.8.3",
-    "vite": "^7.0.3",
-    "vue-tsc": "^2.2.12"
-  }
+	"name": "xodeforces",
+	"private": true,
+	"version": "0.0.1",
+	"description": "Web Code editor for Codeforces problems",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "vue-tsc -b && vite build",
+		"preview": "vite preview",
+		"type-check": "vue-tsc --noEmit"
+	},
+	"dependencies": {
+		"@nuxt/ui": "^3.2.0",
+		"monaco-editor": "^0.52.2",
+		"pinia": "^3.0.3",
+		"vue": "^3.5.17",
+		"vue-router": "4"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.2.0",
+		"@crxjs/vite-plugin": "^2.0.2",
+		"@types/chrome": "^0.0.332",
+		"@types/node": "^24.1.0",
+		"@types/vue-router": "^2.0.0",
+		"@vitejs/plugin-vue": "^6.0.0",
+		"@vue/tsconfig": "^0.7.0",
+		"typescript": "~5.8.3",
+		"vite": "^7.0.3",
+		"vue-tsc": "^2.2.12"
+	}
 }

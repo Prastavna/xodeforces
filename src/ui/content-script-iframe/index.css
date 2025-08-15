@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
-
 #app {
-    height: 100dvh;
+	height: 100dvh;
 }

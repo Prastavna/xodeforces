@@ -32,19 +32,18 @@
 </template>
 
 <script setup lang="ts">
-import { useEditorConfig } from "../stores/editor-config";
 import { languages } from "../constants/languages";
 import { themes } from "../constants/themes";
+import { useEditorConfig } from "../stores/editor-config";
 
 const editorConfig = useEditorConfig();
 const languageItems = Object.values(languages).map((language) => ({
-    value: language.value,
-    label: language.label
+	value: language.value,
+	label: language.label,
 }));
 
 const themeItems = Object.values(themes).map((theme) => ({
-    value: theme.value,
-    label: theme.label
+	value: theme.value,
+	label: theme.label,
 }));
-
 </script>
