@@ -214,6 +214,467 @@ monaco.languages.registerCompletionItemProvider("python", {
 				documentation: "Import from module",
 				range: range,
 			},
+			// More built-in functions
+			{
+				label: "enumerate",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "enumerate(${1:iterable})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Return enumerate object with index and value pairs",
+				range: range,
+			},
+			{
+				label: "zip",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "zip(${1:iterable1}, ${2:iterable2})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Zip multiple iterables together",
+				range: range,
+			},
+			{
+				label: "map",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "map(${1:function}, ${2:iterable})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Apply function to all items in iterable",
+				range: range,
+			},
+			{
+				label: "filter",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "filter(${1:function}, ${2:iterable})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Filter items in iterable based on function",
+				range: range,
+			},
+			{
+				label: "sorted",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "sorted(${1:iterable})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Return sorted list from iterable",
+				range: range,
+			},
+			{
+				label: "reversed",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "reversed(${1:iterable})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Return reversed iterator",
+				range: range,
+			},
+			{
+				label: "sum",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "sum(${1:iterable})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Sum all items in iterable",
+				range: range,
+			},
+			{
+				label: "max",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "max(${1:iterable})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Return maximum value",
+				range: range,
+			},
+			{
+				label: "min",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "min(${1:iterable})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Return minimum value",
+				range: range,
+			},
+			{
+				label: "abs",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "abs(${1:number})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Return absolute value",
+				range: range,
+			},
+			{
+				label: "round",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "round(${1:number}, ${2:ndigits})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Round number to given precision",
+				range: range,
+			},
+			{
+				label: "pow",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "pow(${1:base}, ${2:exp})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Return base raised to power exp",
+				range: range,
+			},
+			{
+				label: "any",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "any(${1:iterable})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Return True if any element is True",
+				range: range,
+			},
+			{
+				label: "all",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "all(${1:iterable})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Return True if all elements are True",
+				range: range,
+			},
+			{
+				label: "isinstance",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "isinstance(${1:object}, ${2:classinfo})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Check if object is instance of class",
+				range: range,
+			},
+			{
+				label: "hasattr",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "hasattr(${1:object}, ${2:name})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Check if object has attribute",
+				range: range,
+			},
+			{
+				label: "getattr",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "getattr(${1:object}, ${2:name}, ${3:default})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Get attribute value from object",
+				range: range,
+			},
+			{
+				label: "setattr",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "setattr(${1:object}, ${2:name}, ${3:value})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Set attribute value on object",
+				range: range,
+			},
+			// String methods
+			{
+				label: "join",
+				kind: monaco.languages.CompletionItemKind.Method,
+				insertText: "${1:separator}.join(${2:iterable})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Join iterable elements with separator",
+				range: range,
+			},
+			{
+				label: "split",
+				kind: monaco.languages.CompletionItemKind.Method,
+				insertText: "${1:string}.split(${2:separator})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Split string by separator",
+				range: range,
+			},
+			{
+				label: "strip",
+				kind: monaco.languages.CompletionItemKind.Method,
+				insertText: "${1:string}.strip()",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Remove whitespace from both ends",
+				range: range,
+			},
+			{
+				label: "replace",
+				kind: monaco.languages.CompletionItemKind.Method,
+				insertText: "${1:string}.replace(${2:old}, ${3:new})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Replace occurrences in string",
+				range: range,
+			},
+			{
+				label: "format",
+				kind: monaco.languages.CompletionItemKind.Method,
+				insertText: "${1:string}.format(${2:args})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Format string with arguments",
+				range: range,
+			},
+			{
+				label: "f-string",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: 'f"${1:text} {${2:variable}}"',
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Formatted string literal",
+				range: range,
+			},
+			// List comprehension
+			{
+				label: "list comprehension",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "[${1:expr} for ${2:item} in ${3:iterable}]",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "List comprehension",
+				range: range,
+			},
+			{
+				label: "list comprehension with condition",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText:
+					"[${1:expr} for ${2:item} in ${3:iterable} if ${4:condition}]",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "List comprehension with condition",
+				range: range,
+			},
+			{
+				label: "dict comprehension",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "{${1:key}: ${2:value} for ${3:item} in ${4:iterable}}",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Dictionary comprehension",
+				range: range,
+			},
+			{
+				label: "set comprehension",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "{${1:expr} for ${2:item} in ${3:iterable}}",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Set comprehension",
+				range: range,
+			},
+			// Common imports
+			{
+				label: "import os",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "import os",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Import os module",
+				range: range,
+			},
+			{
+				label: "import sys",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "import sys",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Import sys module",
+				range: range,
+			},
+			{
+				label: "import math",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "import math",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Import math module",
+				range: range,
+			},
+			{
+				label: "import random",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "import random",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Import random module",
+				range: range,
+			},
+			{
+				label: "import datetime",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "import datetime",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Import datetime module",
+				range: range,
+			},
+			{
+				label: "import json",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "import json",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Import json module",
+				range: range,
+			},
+			{
+				label: "import re",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "import re",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Import regular expressions module",
+				range: range,
+			},
+			{
+				label: "from collections import",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "from collections import ${1:Counter}",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Import from collections module",
+				range: range,
+			},
+			{
+				label: "from itertools import",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "from itertools import ${1:combinations}",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Import from itertools module",
+				range: range,
+			},
+			// More control structures
+			{
+				label: "with",
+				kind: monaco.languages.CompletionItemKind.Keyword,
+				insertText: "with ${1:expression} as ${2:target}:\n    ${3:pass}",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Context manager statement",
+				range: range,
+			},
+			{
+				label: "lambda",
+				kind: monaco.languages.CompletionItemKind.Keyword,
+				insertText: "lambda ${1:args}: ${2:expression}",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Lambda function",
+				range: range,
+			},
+			{
+				label: "assert",
+				kind: monaco.languages.CompletionItemKind.Keyword,
+				insertText: "assert ${1:condition}, ${2:message}",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Assert statement",
+				range: range,
+			},
+			{
+				label: "raise",
+				kind: monaco.languages.CompletionItemKind.Keyword,
+				insertText: "raise ${1:Exception}(${2:message})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Raise exception",
+				range: range,
+			},
+			{
+				label: "yield",
+				kind: monaco.languages.CompletionItemKind.Keyword,
+				insertText: "yield ${1:value}",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Yield value in generator",
+				range: range,
+			},
+			// Special methods
+			{
+				label: "__init__",
+				kind: monaco.languages.CompletionItemKind.Method,
+				insertText: "def __init__(self${1:, args}):\n    ${2:pass}",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Constructor method",
+				range: range,
+			},
+			{
+				label: "__str__",
+				kind: monaco.languages.CompletionItemKind.Method,
+				insertText: "def __str__(self):\n    return ${1:string_representation}",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "String representation method",
+				range: range,
+			},
+			{
+				label: "__repr__",
+				kind: monaco.languages.CompletionItemKind.Method,
+				insertText: "def __repr__(self):\n    return ${1:representation}",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Object representation method",
+				range: range,
+			},
+			{
+				label: "__len__",
+				kind: monaco.languages.CompletionItemKind.Method,
+				insertText: "def __len__(self):\n    return ${1:length}",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Length method",
+				range: range,
+			},
+			// File operations
+			{
+				label: "with open",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText:
+					'with open(${1:filename}, ${2:"r"}) as ${3:file}:\n    ${4:pass}',
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Open file with context manager",
+				range: range,
+			},
+			// Decorators
+			{
+				label: "@property",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "@property\ndef ${1:name}(self):\n    return ${2:value}",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Property decorator",
+				range: range,
+			},
+			{
+				label: "@staticmethod",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "@staticmethod\ndef ${1:name}(${2:args}):\n    ${3:pass}",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Static method decorator",
+				range: range,
+			},
+			{
+				label: "@classmethod",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText:
+					"@classmethod\ndef ${1:name}(cls${2:, args}):\n    ${3:pass}",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Class method decorator",
+				range: range,
+			},
 		];
 
 		return { suggestions };

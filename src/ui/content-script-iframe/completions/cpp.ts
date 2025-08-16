@@ -201,6 +201,287 @@ monaco.languages.registerCompletionItemProvider("cpp", {
 				documentation: "Unique pointer",
 				range: range,
 			},
+			// More standard library containers
+			{
+				label: "std::map",
+				kind: monaco.languages.CompletionItemKind.Class,
+				insertText: "std::map<${1:KeyType}, ${2:ValueType}> ${3:mapName};",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Associative container that contains key-value pairs",
+				range: range,
+			},
+			{
+				label: "std::unordered_map",
+				kind: monaco.languages.CompletionItemKind.Class,
+				insertText:
+					"std::unordered_map<${1:KeyType}, ${2:ValueType}> ${3:mapName};",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Hash table implementation of map",
+				range: range,
+			},
+			{
+				label: "std::set",
+				kind: monaco.languages.CompletionItemKind.Class,
+				insertText: "std::set<${1:Type}> ${2:setName};",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Set of unique elements",
+				range: range,
+			},
+			{
+				label: "std::unordered_set",
+				kind: monaco.languages.CompletionItemKind.Class,
+				insertText: "std::unordered_set<${1:Type}> ${2:setName};",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Hash table implementation of set",
+				range: range,
+			},
+			{
+				label: "std::queue",
+				kind: monaco.languages.CompletionItemKind.Class,
+				insertText: "std::queue<${1:Type}> ${2:queueName};",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "FIFO queue container",
+				range: range,
+			},
+			{
+				label: "std::stack",
+				kind: monaco.languages.CompletionItemKind.Class,
+				insertText: "std::stack<${1:Type}> ${2:stackName};",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "LIFO stack container",
+				range: range,
+			},
+			{
+				label: "std::priority_queue",
+				kind: monaco.languages.CompletionItemKind.Class,
+				insertText: "std::priority_queue<${1:Type}> ${2:pqName};",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Priority queue container",
+				range: range,
+			},
+			{
+				label: "std::deque",
+				kind: monaco.languages.CompletionItemKind.Class,
+				insertText: "std::deque<${1:Type}> ${2:dequeName};",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Double-ended queue",
+				range: range,
+			},
+			{
+				label: "std::list",
+				kind: monaco.languages.CompletionItemKind.Class,
+				insertText: "std::list<${1:Type}> ${2:listName};",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Doubly-linked list",
+				range: range,
+			},
+			{
+				label: "std::pair",
+				kind: monaco.languages.CompletionItemKind.Class,
+				insertText: "std::pair<${1:Type1}, ${2:Type2}> ${3:pairName};",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Pair of two values",
+				range: range,
+			},
+			// Algorithm functions
+			{
+				label: "std::sort",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "std::sort(${1:container}.begin(), ${1:container}.end());",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Sort elements in range",
+				range: range,
+			},
+			{
+				label: "std::find",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText:
+					"std::find(${1:container}.begin(), ${1:container}.end(), ${2:value})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Find element in range",
+				range: range,
+			},
+			{
+				label: "std::binary_search",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText:
+					"std::binary_search(${1:container}.begin(), ${1:container}.end(), ${2:value})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Binary search in sorted range",
+				range: range,
+			},
+			{
+				label: "std::max",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "std::max(${1:a}, ${2:b})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Returns maximum of two values",
+				range: range,
+			},
+			{
+				label: "std::min",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "std::min(${1:a}, ${2:b})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Returns minimum of two values",
+				range: range,
+			},
+			{
+				label: "std::swap",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "std::swap(${1:a}, ${2:b});",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Swap values of two objects",
+				range: range,
+			},
+			{
+				label: "std::reverse",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText:
+					"std::reverse(${1:container}.begin(), ${1:container}.end());",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Reverse elements in range",
+				range: range,
+			},
+			{
+				label: "std::count",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText:
+					"std::count(${1:container}.begin(), ${1:container}.end(), ${2:value})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Count occurrences of value in range",
+				range: range,
+			},
+			// More headers
+			{
+				label: "#include <algorithm>",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "#include <algorithm>",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Include algorithms header",
+				range: range,
+			},
+			{
+				label: "#include <map>",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "#include <map>",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Include map header",
+				range: range,
+			},
+			{
+				label: "#include <unordered_map>",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "#include <unordered_map>",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Include unordered_map header",
+				range: range,
+			},
+			{
+				label: "#include <set>",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "#include <set>",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Include set header",
+				range: range,
+			},
+			{
+				label: "#include <queue>",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "#include <queue>",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Include queue header",
+				range: range,
+			},
+			{
+				label: "#include <stack>",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "#include <stack>",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Include stack header",
+				range: range,
+			},
+			{
+				label: "#include <deque>",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "#include <deque>",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Include deque header",
+				range: range,
+			},
+			{
+				label: "#include <utility>",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "#include <utility>",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Include utility header (for pair, move, etc.)",
+				range: range,
+			},
+			{
+				label: "#include <memory>",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "#include <memory>",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Include memory header (for smart pointers)",
+				range: range,
+			},
+			// Commonly used snippets for competitive programming
+			{
+				label: "fast_io",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "ios_base::sync_with_stdio(false);\ncin.tie(NULL);",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Fast I/O for competitive programming",
+				range: range,
+			},
+			{
+				label: "typedef_shortcuts",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText:
+					"typedef long long ll;\ntypedef vector<int> vi;\ntypedef vector<ll> vll;\ntypedef pair<int, int> pii;",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Common typedefs for competitive programming",
+				range: range,
+			},
+			{
+				label: "auto loop",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText:
+					"for (auto ${1:item} : ${2:container}) {\n    ${3:// loop body}\n}",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Auto type range-based for loop",
+				range: range,
+			},
 		];
 
 		return { suggestions };

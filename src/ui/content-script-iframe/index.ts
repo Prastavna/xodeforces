@@ -12,8 +12,9 @@ import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
 import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
 import { createPinia } from "pinia";
 
-// import './language-configs/cpp'
-// import { setupHoverProviders, setupLanguageSupport } from "./languageConfig"
+import './completions'
+import './hover-providers'
+import './language-configs'
 
 // Set up web workers for different language features
 self.MonacoEnvironment = {
@@ -44,10 +45,6 @@ const router = createRouter({
 app.use(router);
 app.use(ui);
 app.use(createPinia());
-
-// Set up enhanced language support
-// setupLanguageSupport()
-// setupHoverProviders()
 
 app.mount("#app");
 
