@@ -372,6 +372,15 @@ monaco.languages.registerCompletionItemProvider("cpp", {
 			},
 			// More headers
 			{
+				label: "#include <bits/stdc++.h>",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "#include <bits/stdc++.h>",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Include all standard headers",
+				range: range,
+			},
+			{
 				label: "#include <algorithm>",
 				kind: monaco.languages.CompletionItemKind.Snippet,
 				insertText: "#include <algorithm>",
@@ -480,6 +489,237 @@ monaco.languages.registerCompletionItemProvider("cpp", {
 				insertTextRules:
 					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
 				documentation: "Auto type range-based for loop",
+				range: range,
+			},
+			// Non-std prefixed completions (for when using namespace std)
+			{
+				label: "cout",
+				kind: monaco.languages.CompletionItemKind.Method,
+				insertText: "cout << ${1:value} << endl;",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Output to console (requires using namespace std)",
+				range: range,
+			},
+			{
+				label: "cin",
+				kind: monaco.languages.CompletionItemKind.Method,
+				insertText: "cin >> ${1:variable};",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Input from console (requires using namespace std)",
+				range: range,
+			},
+			{
+				label: "vector",
+				kind: monaco.languages.CompletionItemKind.Class,
+				insertText: "vector<${1:Type}> ${2:vectorName};",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Create a vector (requires using namespace std)",
+				range: range,
+			},
+			{
+				label: "string",
+				kind: monaco.languages.CompletionItemKind.Class,
+				insertText: 'string ${1:stringName} = "${2:value}";',
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Create a string (requires using namespace std)",
+				range: range,
+			},
+			{
+				label: "map",
+				kind: monaco.languages.CompletionItemKind.Class,
+				insertText: "map<${1:KeyType}, ${2:ValueType}> ${3:mapName};",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Associative container (requires using namespace std)",
+				range: range,
+			},
+			{
+				label: "unordered_map",
+				kind: monaco.languages.CompletionItemKind.Class,
+				insertText: "unordered_map<${1:KeyType}, ${2:ValueType}> ${3:mapName};",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation:
+					"Hash table implementation (requires using namespace std)",
+				range: range,
+			},
+			{
+				label: "set",
+				kind: monaco.languages.CompletionItemKind.Class,
+				insertText: "set<${1:Type}> ${2:setName};",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Set of unique elements (requires using namespace std)",
+				range: range,
+			},
+			{
+				label: "unordered_set",
+				kind: monaco.languages.CompletionItemKind.Class,
+				insertText: "unordered_set<${1:Type}> ${2:setName};",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation:
+					"Hash table implementation of set (requires using namespace std)",
+				range: range,
+			},
+			{
+				label: "queue",
+				kind: monaco.languages.CompletionItemKind.Class,
+				insertText: "queue<${1:Type}> ${2:queueName};",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "FIFO queue container (requires using namespace std)",
+				range: range,
+			},
+			{
+				label: "stack",
+				kind: monaco.languages.CompletionItemKind.Class,
+				insertText: "stack<${1:Type}> ${2:stackName};",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "LIFO stack container (requires using namespace std)",
+				range: range,
+			},
+			{
+				label: "priority_queue",
+				kind: monaco.languages.CompletionItemKind.Class,
+				insertText: "priority_queue<${1:Type}> ${2:pqName};",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation:
+					"Priority queue container (requires using namespace std)",
+				range: range,
+			},
+			{
+				label: "deque",
+				kind: monaco.languages.CompletionItemKind.Class,
+				insertText: "deque<${1:Type}> ${2:dequeName};",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Double-ended queue (requires using namespace std)",
+				range: range,
+			},
+			{
+				label: "list",
+				kind: monaco.languages.CompletionItemKind.Class,
+				insertText: "list<${1:Type}> ${2:listName};",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Doubly-linked list (requires using namespace std)",
+				range: range,
+			},
+			{
+				label: "pair",
+				kind: monaco.languages.CompletionItemKind.Class,
+				insertText: "pair<${1:Type1}, ${2:Type2}> ${3:pairName};",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Pair of two values (requires using namespace std)",
+				range: range,
+			},
+			{
+				label: "shared_ptr",
+				kind: monaco.languages.CompletionItemKind.Class,
+				insertText:
+					"shared_ptr<${1:Type}> ${2:ptrName} = make_shared<${1:Type}>(${3:args});",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Smart pointer (requires using namespace std)",
+				range: range,
+			},
+			{
+				label: "unique_ptr",
+				kind: monaco.languages.CompletionItemKind.Class,
+				insertText:
+					"unique_ptr<${1:Type}> ${2:ptrName} = make_unique<${1:Type}>(${3:args});",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Unique pointer (requires using namespace std)",
+				range: range,
+			},
+			{
+				label: "sort",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "sort(${1:container}.begin(), ${1:container}.end());",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Sort elements in range (requires using namespace std)",
+				range: range,
+			},
+			{
+				label: "find",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText:
+					"find(${1:container}.begin(), ${1:container}.end(), ${2:value})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Find element in range (requires using namespace std)",
+				range: range,
+			},
+			{
+				label: "binary_search",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText:
+					"binary_search(${1:container}.begin(), ${1:container}.end(), ${2:value})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation:
+					"Binary search in sorted range (requires using namespace std)",
+				range: range,
+			},
+			{
+				label: "max",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "max(${1:a}, ${2:b})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation:
+					"Returns maximum of two values (requires using namespace std)",
+				range: range,
+			},
+			{
+				label: "min",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "min(${1:a}, ${2:b})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation:
+					"Returns minimum of two values (requires using namespace std)",
+				range: range,
+			},
+			{
+				label: "swap",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "swap(${1:a}, ${2:b});",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation:
+					"Swap values of two objects (requires using namespace std)",
+				range: range,
+			},
+			{
+				label: "reverse",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "reverse(${1:container}.begin(), ${1:container}.end());",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation:
+					"Reverse elements in range (requires using namespace std)",
+				range: range,
+			},
+			{
+				label: "count",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText:
+					"count(${1:container}.begin(), ${1:container}.end(), ${2:value})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation:
+					"Count occurrences of value in range (requires using namespace std)",
 				range: range,
 			},
 		];

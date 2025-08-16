@@ -215,6 +215,413 @@ monaco.languages.registerCompletionItemProvider("c", {
 				documentation: "Close file",
 				range: range,
 			},
+			// More standard library headers
+			{
+				label: "#include <math.h>",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "#include <math.h>",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Include math functions header",
+				range: range,
+			},
+			{
+				label: "#include <ctype.h>",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "#include <ctype.h>",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Include character type functions header",
+				range: range,
+			},
+			{
+				label: "#include <time.h>",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "#include <time.h>",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Include time functions header",
+				range: range,
+			},
+			{
+				label: "#include <limits.h>",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "#include <limits.h>",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Include limits and constants header",
+				range: range,
+			},
+			{
+				label: "#include <stdbool.h>",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "#include <stdbool.h>",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Include boolean type header",
+				range: range,
+			},
+			// Mathematical functions
+			{
+				label: "sqrt",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "sqrt(${1:number})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Square root function",
+				range: range,
+			},
+			{
+				label: "pow",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "pow(${1:base}, ${2:exponent})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Power function",
+				range: range,
+			},
+			{
+				label: "abs",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "abs(${1:number})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Absolute value function",
+				range: range,
+			},
+			{
+				label: "sin",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "sin(${1:angle})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Sine function",
+				range: range,
+			},
+			{
+				label: "cos",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "cos(${1:angle})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Cosine function",
+				range: range,
+			},
+			{
+				label: "tan",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "tan(${1:angle})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Tangent function",
+				range: range,
+			},
+			{
+				label: "ceil",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "ceil(${1:number})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Ceiling function",
+				range: range,
+			},
+			{
+				label: "floor",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "floor(${1:number})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Floor function",
+				range: range,
+			},
+			// Character functions
+			{
+				label: "isalpha",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "isalpha(${1:char})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Check if character is alphabetic",
+				range: range,
+			},
+			{
+				label: "isdigit",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "isdigit(${1:char})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Check if character is digit",
+				range: range,
+			},
+			{
+				label: "toupper",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "toupper(${1:char})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Convert character to uppercase",
+				range: range,
+			},
+			{
+				label: "tolower",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "tolower(${1:char})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Convert character to lowercase",
+				range: range,
+			},
+			// Memory functions
+			{
+				label: "calloc",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "calloc(${1:count}, ${2:size})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Allocate and zero-initialize memory",
+				range: range,
+			},
+			{
+				label: "realloc",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "realloc(${1:pointer}, ${2:newSize})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Reallocate memory",
+				range: range,
+			},
+			{
+				label: "memcpy",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "memcpy(${1:dest}, ${2:src}, ${3:size});",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Copy memory block",
+				range: range,
+			},
+			{
+				label: "memset",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "memset(${1:ptr}, ${2:value}, ${3:size});",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Set memory block to value",
+				range: range,
+			},
+			// String functions
+			{
+				label: "strcat",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "strcat(${1:dest}, ${2:src});",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Concatenate strings",
+				range: range,
+			},
+			{
+				label: "strncpy",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "strncpy(${1:dest}, ${2:src}, ${3:n});",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Copy n characters of string",
+				range: range,
+			},
+			{
+				label: "strstr",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "strstr(${1:haystack}, ${2:needle})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Find substring in string",
+				range: range,
+			},
+			{
+				label: "strtok",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "strtok(${1:str}, ${2:delim})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Split string into tokens",
+				range: range,
+			},
+			// File I/O functions
+			{
+				label: "fread",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "fread(${1:buffer}, ${2:size}, ${3:count}, ${4:fp})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Read data from file",
+				range: range,
+			},
+			{
+				label: "fwrite",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "fwrite(${1:buffer}, ${2:size}, ${3:count}, ${4:fp})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Write data to file",
+				range: range,
+			},
+			{
+				label: "fscanf",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: 'fscanf(${1:fp}, "${2:format}", ${3:args});',
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Read formatted data from file",
+				range: range,
+			},
+			{
+				label: "fgets",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "fgets(${1:buffer}, ${2:size}, ${3:fp})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Read string from file",
+				range: range,
+			},
+			{
+				label: "fputs",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "fputs(${1:string}, ${2:fp});",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Write string to file",
+				range: range,
+			},
+			// Time functions
+			{
+				label: "time",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "time(${1:NULL})",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Get current time",
+				range: range,
+			},
+			{
+				label: "clock",
+				kind: monaco.languages.CompletionItemKind.Function,
+				insertText: "clock()",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Get processor time",
+				range: range,
+			},
+			// Common array declarations
+			{
+				label: "int array",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "int ${1:arrayName}[${2:size}];",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Declare integer array",
+				range: range,
+			},
+			{
+				label: "char array",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "char ${1:arrayName}[${2:size}];",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Declare character array",
+				range: range,
+			},
+			{
+				label: "2D array",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "${1:int} ${2:arrayName}[${3:rows}][${4:cols}];",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Declare 2D array",
+				range: range,
+			},
+			// Preprocessor directives
+			{
+				label: "#define",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "#define ${1:NAME} ${2:value}",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Define macro",
+				range: range,
+			},
+			{
+				label: "#ifdef",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "#ifdef ${1:MACRO}\n    ${2:// code}\n#endif",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Conditional compilation",
+				range: range,
+			},
+			{
+				label: "#ifndef",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "#ifndef ${1:MACRO}\n    ${2:// code}\n#endif",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Conditional compilation (if not defined)",
+				range: range,
+			},
+			// Common constants
+			{
+				label: "NULL",
+				kind: monaco.languages.CompletionItemKind.Constant,
+				insertText: "NULL",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Null pointer constant",
+				range: range,
+			},
+			{
+				label: "TRUE",
+				kind: monaco.languages.CompletionItemKind.Constant,
+				insertText: "TRUE",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Boolean true constant",
+				range: range,
+			},
+			{
+				label: "FALSE",
+				kind: monaco.languages.CompletionItemKind.Constant,
+				insertText: "FALSE",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Boolean false constant",
+				range: range,
+			},
+			// Common snippets for competitive programming
+			{
+				label: "fast input",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "setbuf(stdout, NULL);",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Unbuffered output for faster I/O",
+				range: range,
+			},
+			{
+				label: "max macro",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "#define MAX(a, b) ((a) > (b) ? (a) : (b))",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Maximum macro function",
+				range: range,
+			},
+			{
+				label: "min macro",
+				kind: monaco.languages.CompletionItemKind.Snippet,
+				insertText: "#define MIN(a, b) ((a) < (b) ? (a) : (b))",
+				insertTextRules:
+					monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+				documentation: "Minimum macro function",
+				range: range,
+			},
 		];
 
 		return { suggestions };
