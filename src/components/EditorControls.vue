@@ -24,9 +24,17 @@
 
             <div class="flex gap-2 pr-4">
                 <UButton @click="editorConfig.resetCode" icon="i-heroicons-trash" variant="ghost" color="error"></UButton>
-                <UButton @click="loadSnippet" :icon="hasSnippet ? 'i-heroicons-code-bracket-square' : 'i-heroicons-code-bracket'" variant="ghost" :title="hasSnippet ? 'Load Custom Snippet' : 'Load Default Template'" size="sm" :color="hasSnippet ? 'primary' : 'gray'"></UButton>
+                <UPopover v-if="hasSnippet" mode="hover" :open-delay="300" :close-delay="100">
+                    <UButton @click="loadSnippet" :icon="hasSnippet ? 'i-heroicons-code-bracket-square' : 'i-heroicons-code-bracket'" variant="ghost" :title="hasSnippet ? 'Load Custom Snippet' : 'Load Default Template'" size="sm" :color="hasSnippet ? 'primary' : 'gray'"></UButton>
+                    <template #content>
+                        <div class="p-3 max-w-md">
+                            <h4 class="text-sm font-medium mb-2">Custom Snippet Preview</h4>
+                            <pre class="text-xs bg-gray-100 dark:bg-gray-800 p-2 rounded overflow-x-auto max-h-48 overflow-y-auto"><code>{{ snippetStore.getSnippet(editorConfig.language) }}</code></pre>
+                        </div>
+                    </template>
+                </UPopover>
+                <UButton v-else @click="loadSnippet" :icon="hasSnippet ? 'i-heroicons-code-bracket-square' : 'i-heroicons-code-bracket'" variant="ghost" :title="hasSnippet ? 'Load Custom Snippet' : 'Load Default Template'" size="sm" :color="hasSnippet ? 'primary' : 'gray'"></UButton>
                 <UButton @click="editorConfig.formatCode" icon="i-heroicons-sparkles" variant="ghost" title="Format Code" size="sm"></UButton>
-                <UButton @click="saveCurrentAsSnippet" icon="i-heroicons-bookmark" variant="ghost" title="Save as Snippet" size="sm"></UButton>
                 <UButton @click="editorConfig.submitCode" icon="i-heroicons-paper-clip">Attach File</UButton>
             </div>
         </div>
@@ -42,7 +50,6 @@ import { useSnippetStore } from "../stores/snippet-store";
 
 const editorConfig = useEditorConfig();
 const snippetStore = useSnippetStore();
-const toast = useToast();
 
 onMounted(() => {
 	snippetStore.loadSnippets();
@@ -71,17 +78,5 @@ const loadSnippet = () => {
 			languages[editorConfig.language as keyof typeof languages]?.sample || "";
 		editorConfig.onCodeChange(defaultSnippet);
 	}
-};
-
-const saveCurrentAsSnippet = () => {
-	snippetStore.saveSnippet(editorConfig.language, editorConfig.code);
-	const languageLabel =
-		languages[editorConfig.language as keyof typeof languages]?.label ||
-		editorConfig.language;
-	toast.add({
-		title: "Snippet saved",
-		description: `${languageLabel} template saved successfully`,
-		color: "success",
-	});
 };
 </script>
