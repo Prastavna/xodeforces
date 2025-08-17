@@ -1,6 +1,5 @@
 import ui from "@nuxt/ui/vue-plugin";
 import { createApp } from "vue";
-import { createRouter, createWebHistory } from "vue-router";
 import App from "./App.vue";
 import "./index.css";
 
@@ -15,6 +14,7 @@ import { createPinia } from "pinia";
 import './completions'
 import './hover-providers'
 import './language-configs'
+import { appRouter } from "./router";
 
 // Set up web workers for different language features
 self.MonacoEnvironment = {
@@ -35,16 +35,17 @@ self.MonacoEnvironment = {
 	},
 };
 
-const app = createApp(App);
+appRouter.addRoute({
+    path: '/',
+    component: () => import('./pages/Home.vue')
+})
 
-const router = createRouter({
-	routes: [],
-	history: createWebHistory(),
-});
+appRouter.addRoute({
+    path: '/settings',
+    component: () => import('./pages/Settings.vue')
+})
 
-app.use(router);
-app.use(ui);
-app.use(createPinia());
+const app = createApp(App).use(ui).use(createPinia()).use(appRouter);
 
 app.mount("#app");
 

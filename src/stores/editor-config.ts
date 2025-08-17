@@ -8,6 +8,21 @@ const getSampleCode = () => {
 	if (!language) {
 		return languages.javascript.sample;
 	}
+
+	// Try to get custom snippet first
+	const snippetsData = storage.local.get("xodeforces-snippets");
+	if (snippetsData) {
+		try {
+			const snippets = JSON.parse(snippetsData);
+			if (snippets[language]) {
+				return snippets[language];
+			}
+		} catch (error) {
+			console.error("Failed to parse snippets:", error);
+		}
+	}
+
+	// Fallback to default sample
 	const sampleCode = languages[language as keyof typeof languages].sample;
 	if (!sampleCode) {
 		return "";
@@ -20,6 +35,8 @@ export const useEditorConfig = defineStore("editor-config", {
 		language: storage.local.get("language") || "javascript",
 		theme: storage.local.get("theme") || "vs-dark",
 		code: storage.session.get("code") || getSampleCode(),
+		tabSize: Number(storage.local.get("tabSize")) || 4,
+		insertSpaces: storage.local.get("insertSpaces") !== "false",
 		editorInstance: null as monaco.editor.IStandaloneCodeEditor | null,
 		editorOptions: {
 			automaticLayout: true,
@@ -52,15 +69,32 @@ export const useEditorConfig = defineStore("editor-config", {
 			},
 			formatOnPaste: true,
 			formatOnType: true,
-			tabSize: 4,
-			insertSpaces: true,
+			tabSize: Number(storage.local.get("tabSize")) || 4,
+			insertSpaces: storage.local.get("insertSpaces") !== "false",
 		} satisfies monaco.editor.IStandaloneEditorConstructionOptions,
 	}),
 	actions: {
 		changeLanguage(language: string) {
 			this.language = language;
 			storage.local.set("language", language);
-			this.code = getSampleCode();
+
+			// Try to get custom snippet first
+			const snippetsData = storage.local.get("xodeforces-snippets");
+			if (snippetsData) {
+				try {
+					const snippets = JSON.parse(snippetsData);
+					if (snippets[language]) {
+						this.code = snippets[language];
+						return;
+					}
+				} catch (error) {
+					console.error("Failed to parse snippets:", error);
+				}
+			}
+
+			// Fallback to default sample
+			const sampleCode = languages[language as keyof typeof languages].sample;
+			this.code = sampleCode || "";
 		},
 		changeTheme(theme: string) {
 			this.theme = theme;
@@ -74,13 +108,36 @@ export const useEditorConfig = defineStore("editor-config", {
 			storage.session.set("code", code);
 		},
 		formatCode() {
-			if (this.editorInstance) {
-				this.editorInstance.getAction("editor.action.formatDocument")?.run();
+			if (!this.editorInstance) return;
+
+			// Try Monaco's built-in formatter first
+			const formatAction = this.editorInstance.getAction(
+				"editor.action.formatDocument",
+			);
+			if (formatAction) {
+				formatAction.run();
+				return;
 			}
 		},
 		resetCode() {
 			this.code = "";
 			storage.session.set("code", "");
+		},
+		updateEditorConfig(tabSize: number, insertSpaces: boolean) {
+			this.tabSize = tabSize;
+			this.insertSpaces = insertSpaces;
+			this.editorOptions.tabSize = tabSize;
+			this.editorOptions.insertSpaces = insertSpaces;
+
+			storage.local.set("tabSize", tabSize.toString());
+			storage.local.set("insertSpaces", insertSpaces.toString());
+
+			if (this.editorInstance) {
+				this.editorInstance.updateOptions({
+					tabSize,
+					insertSpaces,
+				});
+			}
 		},
 		submitCode() {
 			const extension =
