@@ -43,10 +43,20 @@ export const loadTheme = async (themeName: string) => {
 			return;
 		}
 
-		// Get the base URL for the extension
-		const baseUrl = chrome?.runtime?.getURL
-			? chrome.runtime.getURL("")
-			: window.location.origin;
+		// Cross-browser compatible runtime URL getter
+		const getRuntimeURL = (path: string): string => {
+			if (typeof chrome !== "undefined" && chrome.runtime?.getURL) {
+				return chrome.runtime.getURL(path);
+			}
+			// @ts-ignore - Firefox browser API
+			if (typeof browser !== "undefined" && browser.runtime?.getURL) {
+				// @ts-ignore
+				return browser.runtime.getURL(path);
+			}
+			return window.location.origin;
+		};
+
+		const baseUrl = getRuntimeURL("");
 
 		const themeUrl = `${baseUrl}/themes/${fileName}`;
 

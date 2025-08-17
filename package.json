@@ -6,7 +6,9 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
+		"dev:firefox": "vite --config vite.config.firefox.ts",
 		"build": "vue-tsc -b && vite build",
+		"build:firefox": "vue-tsc -b && node scripts/build-firefox.js",
 		"preview": "vite preview",
 		"type-check": "vue-tsc --noEmit",
 		"check:fix": "bunx biome check --fix"

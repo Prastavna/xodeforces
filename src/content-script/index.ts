@@ -1,7 +1,20 @@
 import { name } from "../../package.json";
 import { storage } from "../services/storage";
 
-const src = chrome.runtime.getURL("src/ui/content-script-iframe/index.html");
+// Cross-browser compatible runtime URL getter
+const getRuntimeURL = (path: string): string => {
+	if (typeof chrome !== "undefined" && chrome.runtime?.getURL) {
+		return chrome.runtime.getURL(path);
+	}
+	// @ts-ignore - Firefox browser API
+	if (typeof browser !== "undefined" && browser.runtime?.getURL) {
+		// @ts-ignore
+		return browser.runtime.getURL(path);
+	}
+	throw new Error("Extension runtime API not available");
+};
+
+const src = getRuntimeURL("src/ui/content-script-iframe/index.html");
 
 const codeforcesBody = document.getElementById("body");
 

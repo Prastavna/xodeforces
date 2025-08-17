@@ -1,6 +1,6 @@
 # xodeforces
 
-A powerful Chrome extension that enhances your Codeforces experience with an integrated code editor and additional features.
+A powerful browser extension that enhances your Codeforces experience with an integrated code editor and additional features. Compatible with both Chrome and Firefox.
 
 **Currently not accepting any Pull Requests, until the extension is ready for release**
 
@@ -16,9 +16,17 @@ A powerful Chrome extension that enhances your Codeforces experience with an int
 
 ## Installation
 
+### Chrome
 1. Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/xodeforces/lnfgjljnmoickkgbjedecbkcmhhdncpk)
 2. Navigate to any Codeforces problem page
 3. The xodeforces editor will automatically appear below the problem statement
+
+### Firefox
+1. Download the latest Firefox extension from the [releases page](https://github.com/prastavna/xodeforces/releases)
+2. Open Firefox and navigate to `about:addons`
+3. Click the gear icon and select "Install Add-on From File"
+4. Select the downloaded `.xpi` file
+5. Navigate to any Codeforces problem page
 
 ## Development
 
@@ -41,13 +49,21 @@ A powerful Chrome extension that enhances your Codeforces experience with an int
 
 3. Start development server
    ```bash
+   # For Chrome
    bun run dev
+   
+   # For Firefox
+   bun run dev:firefox
    ```
 
 ### Building for Production
 
 ```bash
+# For Chrome
 bun run build
+
+# For Firefox
+bun run build:firefox
 ```
 
 ## Technologies Used
