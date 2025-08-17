@@ -30,6 +30,5 @@ monaco.languages.setLanguageConfiguration("go", {
 		increaseIndentPattern: /^.*\{[^}"']*$/,
 		decreaseIndentPattern: /^.*\}.*$/,
 	},
-	wordPattern:
-		/(-?\d*\.\d\w*)|([^\`\~\!\@\#\%\^\&\*\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s]+)/g,
+	wordPattern: /(-?\d*\.\d\w*)|([^`~!@#%^&*()\-=+[{\]}\\|;:'",.<>/?\s]+)/g,
 });

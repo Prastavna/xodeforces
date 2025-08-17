@@ -16,6 +16,5 @@ monaco.languages.setLanguageConfiguration("sql", {
 		{ open: '"', close: '"' },
 		{ open: "'", close: "'" },
 	],
-	wordPattern:
-		/(-?\d*\.\d\w*)|([^\`\~\!\@\#\%\^\&\*\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s]+)/g,
+	wordPattern: /(-?\d*\.\d\w*)|([^`~!@#%^&*()\-=+[{\]}\\|;:'",.<>/?\s]+)/g,
 });

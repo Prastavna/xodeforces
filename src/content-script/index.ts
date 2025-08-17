@@ -228,9 +228,19 @@ const attachFileToInput = (file: File) => {
 	fileInput.dispatchEvent(new Event("change", { bubbles: true }));
 };
 
+const exportSnippets = (file: File) => {
+	const link = document.createElement("a");
+	link.href = URL.createObjectURL(file);
+	link.download = "xodeforces-snippets.json";
+	link.click();
+};
+
 self.addEventListener("message", (event) => {
 	if (event.data.type === "attachFileToInput") {
 		attachFileToInput(event.data.file);
+	}
+	if (event.data.type === "exportSnippets") {
+		exportSnippets(event.data.file);
 	}
 });
 

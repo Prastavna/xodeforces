@@ -28,6 +28,5 @@ monaco.languages.setLanguageConfiguration("java", {
 		increaseIndentPattern: /^.*\{[^}"']*$/,
 		decreaseIndentPattern: /^.*\}.*$/,
 	},
-	wordPattern:
-		/(-?\d*\.\d\w*)|([^\`\~\!\@\#\%\^\&\*\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s]+)/g,
+	wordPattern: /(-?\d*\.\d\w*)|([^`~!@#%^&*()\-=+[{\]}\\|;:'",.<>/?\s]+)/g,
 });

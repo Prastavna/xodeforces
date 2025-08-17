@@ -18,7 +18,7 @@
   
 <script setup lang="ts">
 import * as monaco from "monaco-editor";
-import { ref, watch, toRef } from "vue";
+import { ref, toRef, watch } from "vue";
 import EditorControls from "../../../components/EditorControls.vue";
 import MonacoEditor from "../../../components/MonacoEditor.vue";
 import { useEditorConfig } from "../../../stores/editor-config";
@@ -27,7 +27,6 @@ const monacoEditor = ref(null);
 
 const editorConfig = useEditorConfig();
 const currentTheme = toRef(editorConfig, "theme");
-
 
 const editorOptions = editorConfig.editorOptions;
 

@@ -37,6 +37,5 @@ monaco.languages.setLanguageConfiguration("python", {
 			action: { indentAction: monaco.languages.IndentAction.Indent },
 		},
 	],
-	wordPattern:
-		/(-?\d*\.\d\w*)|([^\`\~\!\@\#\%\^\&\*\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s]+)/g,
+	wordPattern: /(-?\d*\.\d\w*)|([^`~!@#%^&*()\-=+[{\]}\\|;:'",.<>/?\s]+)/g,
 });

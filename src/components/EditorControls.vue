@@ -8,7 +8,7 @@
                     :items="languageItems"
                     value-attribute="value"
                     label-attribute="label"
-                    class="w-32"
+                    class="w-40"
                     icon="i-heroicons-language"
                 />
             </div>
@@ -18,7 +18,7 @@
                 <UPopover v-if="hasSnippet" mode="hover" :open-delay="300" :close-delay="100">
                     <UButton @click="loadSnippet" :icon="hasSnippet ? 'i-heroicons-code-bracket-square' : 'i-heroicons-code-bracket'" variant="ghost" :title="hasSnippet ? 'Load Custom Snippet' : 'Load Default Template'" size="sm" :color="hasSnippet ? 'primary' : 'gray'"></UButton>
                     <template #content>
-                        <div class="p-3 max-w-md">
+                        <div class="p-3 max-w-md sticky z-10">
                             <h4 class="text-sm font-medium mb-2">Custom Snippet Preview</h4>
                             <pre class="text-xs bg-gray-100 dark:bg-gray-800 p-2 rounded overflow-x-auto max-h-48 overflow-y-auto"><code>{{ snippetStore.getSnippet(editorConfig.language) }}</code></pre>
                         </div>
@@ -33,9 +33,8 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed } from "vue";
+import { computed, onMounted } from "vue";
 import { languages } from "../constants/languages";
-
 import { useEditorConfig } from "../stores/editor-config";
 import { useSnippetStore } from "../stores/snippet-store";
 
@@ -46,10 +45,12 @@ onMounted(() => {
 	snippetStore.loadSnippets();
 });
 
-const languageItems = Object.values(languages).map((language) => ({
-	value: language.value,
-	label: language.label,
-}));
+const languageItems = Object.values(languages)
+	.map((language) => ({
+		value: language.value,
+		label: language.label,
+	}))
+	.sort((a, b) => a.label.localeCompare(b.label));
 
 const hasSnippet = computed(() => {
 	return snippetStore.getSnippet(editorConfig.language) !== null;

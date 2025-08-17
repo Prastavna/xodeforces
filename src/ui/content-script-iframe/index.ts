@@ -11,9 +11,9 @@ import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
 import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
 import { createPinia } from "pinia";
 
-import './completions'
-import './hover-providers'
-import './language-configs'
+import "./completions";
+import "./hover-providers";
+import "./language-configs";
 import { appRouter } from "./router";
 
 // Set up web workers for different language features
@@ -36,14 +36,14 @@ self.MonacoEnvironment = {
 };
 
 appRouter.addRoute({
-    path: '/',
-    component: () => import('./pages/Home.vue')
-})
+	path: "/",
+	component: () => import("./pages/Home.vue"),
+});
 
 appRouter.addRoute({
-    path: '/settings',
-    component: () => import('./pages/Settings.vue')
-})
+	path: "/settings",
+	component: () => import("./pages/Settings.vue"),
+});
 
 const app = createApp(App).use(ui).use(createPinia()).use(appRouter);
 

@@ -13,10 +13,11 @@
         </p>
         
         <div class="space-y-4">
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-4 gap-4">
             <div>
               <label class="block text-sm font-medium mb-2">Tab Size</label>
               <USelect
+                class="w-20"
                 v-model="tabSize"
                 :items="tabSizeOptions"
                 value-attribute="value"
@@ -27,6 +28,7 @@
             <div>
               <label class="block text-sm font-medium mb-2">Indentation</label>
               <USelect
+                class="w-32"
                 v-model="indentationType"
                 :items="indentationOptions"
                 value-attribute="value"
@@ -39,7 +41,7 @@
             <label class="block text-sm font-medium mb-2">Editor Theme</label>
             <USelect
               :model-value="editorConfig.theme"
-              @update:modelValue="(value) => editorConfig.changeTheme(value)"
+              @update:modelValue="editorConfig.changeTheme"
               :items="themeItems"
               value-attribute="value"
               label-attribute="label"
@@ -103,7 +105,7 @@
               v-model="snippetCode"
               :rows="12"
               placeholder="Enter your code template..."
-              class="font-mono text-sm"
+              class="font-mono text-sm w-full"
             />
           </div>
 
@@ -142,16 +144,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { computed, ref, watch } from "vue";
+import { competitiveTemplates } from "../../../constants/competitive-templates";
 import { languages } from "../../../constants/languages";
 import { themes } from "../../../constants/themes";
-import { useSnippetStore } from "../../../stores/snippet-store";
 import { useEditorConfig } from "../../../stores/editor-config";
-import { competitiveTemplates } from "../../../constants/competitive-templates";
+import { useSnippetStore } from "../../../stores/snippet-store";
 
 const snippetStore = useSnippetStore();
 const editorConfig = useEditorConfig();
-const selectedLanguage = ref("");
+const selectedLanguage = ref(editorConfig.language);
 const snippetCode = ref("");
 const fileInput = ref<HTMLInputElement>();
 const toast = useToast();
@@ -245,12 +247,18 @@ const exportSnippets = () => {
 	}
 
 	const dataStr = JSON.stringify(snippets, null, 2);
-	const dataBlob = new Blob([dataStr], { type: "application/json" });
+	const blob = new Blob([dataStr], { type: "application/json" });
+	const file = new File([blob], "xodeforces-snippets.json", {
+		type: "application/json",
+	});
 
-	const link = document.createElement("a");
-	link.href = URL.createObjectURL(dataBlob);
-	link.download = "xodeforces-snippets.json";
-	link.click();
+	self.parent.postMessage(
+		{
+			type: "exportSnippets",
+			file,
+		},
+		"*",
+	);
 
 	toast.add({
 		title: "Snippets exported",

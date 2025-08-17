@@ -5,8 +5,8 @@
 <script setup lang="ts">
 import * as monaco from "monaco-editor";
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
-import { useEditorConfig } from "../stores/editor-config";
 import { setupCustomThemes } from "../constants/custom-themes";
+import { useEditorConfig } from "../stores/editor-config";
 
 const editorConfig = useEditorConfig();
 

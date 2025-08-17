@@ -31,6 +31,5 @@ monaco.languages.setLanguageConfiguration("rust", {
 		increaseIndentPattern: /^.*\{[^}"']*$/,
 		decreaseIndentPattern: /^.*\}.*$/,
 	},
-	wordPattern:
-		/(-?\d*\.\d\w*)|([^\`\~\!\@\#\%\^\&\*\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s]+)/g,
+	wordPattern: /(-?\d*\.\d\w*)|([^`~!@#%^&*()\-=+[{\]}\\|;:'",.<>/?\s]+)/g,
 });
