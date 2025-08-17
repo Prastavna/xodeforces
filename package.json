@@ -1,14 +1,15 @@
 {
 	"name": "xodeforces",
 	"private": true,
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"description": "Web Code editor for Codeforces problems",
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
 		"build": "vue-tsc -b && vite build",
 		"preview": "vite preview",
-		"type-check": "vue-tsc --noEmit"
+		"type-check": "vue-tsc --noEmit",
+		"check:fix": "bunx biome check --fix"
 	},
 	"dependencies": {
 		"@nuxt/ui": "^3.2.0",

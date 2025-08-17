@@ -6,7 +6,15 @@
 		"useIgnoreFile": false
 	},
 	"files": {
-		"ignoreUnknown": false
+		"ignoreUnknown": false,
+		"includes": [
+			"src/**/*",
+			"public/**/*",
+			"vite.config.ts",
+			"tsconfig.app.json",
+			"tsconfig.node.json",
+			"biome.json"
+		]
 	},
 	"formatter": {
 		"enabled": true,

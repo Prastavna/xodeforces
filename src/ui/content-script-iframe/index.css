@@ -4,3 +4,11 @@
 #app {
 	height: 100dvh;
 }
+
+button,
+[role="button"] {
+	cursor: pointer;
+}
+:disabled {
+	cursor: default; /* Ensures disabled buttons don't get pointer cursor */
+}

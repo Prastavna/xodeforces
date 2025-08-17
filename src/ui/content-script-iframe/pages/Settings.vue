@@ -52,93 +52,90 @@
         </div>
       </div>
 
-      <div class="border border-gray-200 rounded-lg p-4">
-        <h3 class="text-lg font-medium mb-4">Snippets</h3>
-        <p class="text-sm text-gray-600 mb-4">
-          Manage your code templates and snippets for different programming languages
-        </p>
-        
-        <div class="space-y-4">
-          <USelect
-            v-model="selectedLanguage"
-            :items="languageItems"
-            value-attribute="value"
-            label-attribute="label"
-            class="w-48"
-            placeholder="Select a language"
-          />
-
-          <div v-if="selectedLanguage" class="space-y-3">
-            <div class="flex justify-between items-center">
-              <label class="text-sm font-medium">
-                {{ selectedLanguageLabel }} Template
-              </label>
-              <div class="flex gap-2">
-                <UButton 
-                  @click="loadCompetitiveTemplate"
-                  variant="ghost"
-                  size="sm"
-                  icon="i-heroicons-trophy"
-                  title="Load competitive programming template"
-                >
-                  CP Template
-                </UButton>
-                <UButton 
-                  @click="resetToDefault"
-                  variant="ghost"
-                  size="sm"
-                  icon="i-heroicons-arrow-path"
-                >
-                  Reset to Default
-                </UButton>
-                <UButton 
-                  @click="saveSnippet"
-                  size="sm"
-                  icon="i-heroicons-check"
-                >
-                  Save
-                </UButton>
-              </div>
-            </div>
-            
-            <UTextarea
-              v-model="snippetCode"
-              :rows="12"
-              placeholder="Enter your code template..."
-              class="font-mono text-sm w-full"
+      <UAccordion :items="snippetAccordionItems" class=" border border-gray-200 rounded-lg px-4 py-2">
+        <template #snippets>
+          <div class="space-y-4">
+            <USelect
+              v-model="selectedLanguage"
+              :items="languageItems"
+              value-attribute="value"
+              label-attribute="label"
+              class="w-48"
+              placeholder="Select a language"
             />
-          </div>
 
-          <div class="border-t pt-4">
-            <h4 class="text-md font-medium mb-3">Snippet Management</h4>
-            <div class="flex gap-3">
-              <UButton 
-                @click="exportSnippets"
-                variant="outline"
-                size="sm"
-                icon="i-heroicons-arrow-down-tray"
-              >
-                Export All
-              </UButton>
-              <UButton 
-                @click="importSnippets"
-                variant="outline"
-                size="sm"
-                icon="i-heroicons-arrow-up-tray"
-              >
-                Import
-              </UButton>
-              <input 
-                ref="fileInput"
-                type="file"
-                accept=".json"
-                @change="handleFileImport"
-                class="hidden"
+            <div v-if="selectedLanguage" class="space-y-3">
+              <div class="flex justify-between items-center">
+                <label class="text-sm font-medium">
+                  {{ selectedLanguageLabel }} Template
+                </label>
+                <div class="flex gap-2">
+                  <UButton 
+                    @click="loadCompetitiveTemplate"
+                    variant="ghost"
+                    size="sm"
+                    icon="i-heroicons-trophy"
+                    title="Load competitive programming template"
+                  >
+                    CP Template
+                  </UButton>
+                  <UButton 
+                    @click="resetToDefault"
+                    variant="ghost"
+                    size="sm"
+                    icon="i-heroicons-arrow-path"
+                  >
+                    Reset to Default
+                  </UButton>
+                  <UButton 
+                    @click="saveSnippet"
+                    size="sm"
+                    icon="i-heroicons-check"
+                  >
+                    Save
+                  </UButton>
+                </div>
+              </div>
+              
+              <UTextarea
+                v-model="snippetCode"
+                :rows="12"
+                placeholder="Enter your code template..."
+                class="font-mono text-sm w-full"
               />
             </div>
+
+            <div class="border-t pt-4">
+              <h4 class="text-md font-medium mb-3">Snippet Management</h4>
+              <div class="flex gap-3">
+                <UButton 
+                  @click="exportSnippets"
+                  variant="outline"
+                  size="sm"
+                  icon="i-heroicons-arrow-down-tray"
+                >
+                  Export All
+                </UButton>
+                <UButton 
+                  @click="importSnippets"
+                  variant="outline"
+                  size="sm"
+                  icon="i-heroicons-arrow-up-tray"
+                >
+                  Import
+                </UButton>
+                <input 
+                  ref="fileInput"
+                  type="file"
+                  accept=".json"
+                  @change="handleFileImport"
+                  class="hidden"
+                />
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </template>
+      </UAccordion>
     </div>
   </div>
 </template>
@@ -181,6 +178,16 @@ const themeItems = Object.values(themes).map((theme) => ({
 	value: theme.value,
 	label: theme.label,
 }));
+
+const snippetAccordionItems = [
+	{
+		label: "Snippets",
+		icon: "i-heroicons-code-bracket",
+		description:
+			"Manage your code templates and snippets for different programming languages",
+		slot: "snippets",
+	},
+];
 
 const selectedLanguageLabel = computed(() => {
 	if (!selectedLanguage.value) return "";
