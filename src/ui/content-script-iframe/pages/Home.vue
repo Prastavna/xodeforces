@@ -6,7 +6,7 @@
           ref="monacoEditor"
           v-model="editorConfig.code"
           :language="editorConfig.language"
-          :theme="editorConfig.theme"
+          :theme="currentTheme"
           :options="editorOptions"
           :height="'100%'"
           @change="onCodeChange"
@@ -16,48 +16,18 @@
     </div>
   </template>
   
-  <script setup lang="ts">
+<script setup lang="ts">
 import * as monaco from "monaco-editor";
-import { ref } from "vue";
+import { ref, watch, toRef } from "vue";
 import EditorControls from "../../../components/EditorControls.vue";
 import MonacoEditor from "../../../components/MonacoEditor.vue";
 import { useEditorConfig } from "../../../stores/editor-config";
 
 const monacoEditor = ref(null);
-// let editorInstance = null
 
 const editorConfig = useEditorConfig();
+const currentTheme = toRef(editorConfig, "theme");
 
-// const editorOptions = reactive({
-//   fontSize: 14,
-//   wordWrap: 'on',
-//   lineNumbers: 'on',
-//   minimap: { enabled: true },
-//   scrollBeyondLastLine: false,
-//   automaticLayout: true,
-//   tabSize: 2,
-//   insertSpaces: true,
-//   detectIndentation: false,
-//   // Enhanced IntelliSense options
-//   suggestOnTriggerCharacters: true,
-//   acceptSuggestionOnEnter: 'on',
-//   tabCompletion: 'on',
-//   quickSuggestions: {
-//     other: true,
-//     comments: true,
-//     strings: true
-//   },
-//   parameterHints: {
-//     enabled: true,
-//     cycle: true
-//   },
-//   hover: {
-//     enabled: true,
-//     delay: 300
-//   },
-//   formatOnPaste: true,
-//   formatOnType: true
-// })
 
 const editorOptions = editorConfig.editorOptions;
 
@@ -66,8 +36,6 @@ const onCodeChange = (newCode: string) => {
 };
 
 const onEditorMounted = (editor: monaco.editor.IStandaloneCodeEditor) => {
-	// editorInstance = editor
-
 	// Add custom commands or key bindings here if needed
 	editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
 		console.log("Save shortcut pressed!");

@@ -11,15 +11,6 @@
                     class="w-32"
                     icon="i-heroicons-language"
                 />
-
-                <USelect
-                    v-model="editorConfig.theme"
-                    @update:modelValue="editorConfig.changeTheme"
-                    :items="themeItems"
-                    value-attribute="value"
-                    label-attribute="label"
-                    class="w-32"
-                />
             </div>
 
             <div class="flex gap-2 pr-4">
@@ -44,7 +35,7 @@
 <script setup lang="ts">
 import { onMounted, computed } from "vue";
 import { languages } from "../constants/languages";
-import { themes } from "../constants/themes";
+
 import { useEditorConfig } from "../stores/editor-config";
 import { useSnippetStore } from "../stores/snippet-store";
 
@@ -58,11 +49,6 @@ onMounted(() => {
 const languageItems = Object.values(languages).map((language) => ({
 	value: language.value,
 	label: language.label,
-}));
-
-const themeItems = Object.values(themes).map((theme) => ({
-	value: theme.value,
-	label: theme.label,
 }));
 
 const hasSnippet = computed(() => {

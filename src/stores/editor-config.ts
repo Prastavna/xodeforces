@@ -1,4 +1,4 @@
-import type * as monaco from "monaco-editor";
+import * as monaco from "monaco-editor";
 import { defineStore } from "pinia";
 import { languages } from "../constants/languages";
 import { storage } from "../services/storage";

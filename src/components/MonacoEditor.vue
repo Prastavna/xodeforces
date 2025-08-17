@@ -6,6 +6,7 @@
 import * as monaco from "monaco-editor";
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useEditorConfig } from "../stores/editor-config";
+import { setupCustomThemes } from "../constants/custom-themes";
 
 const editorConfig = useEditorConfig();
 
@@ -78,6 +79,9 @@ const defaultOptions: monaco.editor.IStandaloneEditorConstructionOptions = {
 
 const initMonaco = async () => {
 	if (!editorContainer.value) return;
+
+	// Setup custom themes
+	await setupCustomThemes();
 
 	// Set container dimensions
 	const container = editorContainer.value;
@@ -188,9 +192,13 @@ watch(
 
 watch(
 	() => props.theme,
-	(newTheme) => {
-		if (editor) {
-			monaco.editor.setTheme(newTheme);
+	(newTheme, oldTheme) => {
+		if (editor && newTheme && newTheme !== oldTheme) {
+			try {
+				monaco.editor.setTheme(newTheme);
+			} catch (error) {
+				console.error("Failed to apply theme:", newTheme, error);
+			}
 		}
 	},
 );

@@ -35,6 +35,18 @@
               />
             </div>
           </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Editor Theme</label>
+            <USelect
+              :model-value="editorConfig.theme"
+              @update:modelValue="(value) => editorConfig.changeTheme(value)"
+              :items="themeItems"
+              value-attribute="value"
+              label-attribute="label"
+              class="w-full"
+              icon="i-heroicons-paint-brush"
+            />
+          </div>
         </div>
       </div>
 
@@ -132,6 +144,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import { languages } from "../../../constants/languages";
+import { themes } from "../../../constants/themes";
 import { useSnippetStore } from "../../../stores/snippet-store";
 import { useEditorConfig } from "../../../stores/editor-config";
 import { competitiveTemplates } from "../../../constants/competitive-templates";
@@ -160,6 +173,11 @@ const indentationOptions = [
 const languageItems = Object.values(languages).map((language) => ({
 	value: language.value,
 	label: language.label,
+}));
+
+const themeItems = Object.values(themes).map((theme) => ({
+	value: theme.value,
+	label: theme.label,
 }));
 
 const selectedLanguageLabel = computed(() => {
