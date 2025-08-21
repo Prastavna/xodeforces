@@ -1,5 +1,6 @@
+import { crx } from "@crxjs/vite-plugin";
 import { defineConfig, mergeConfig, UserConfig } from "vite";
-import { resolve } from "path";
+import manifest from "./manifest.firefox.config";
 import baseConfig from "./vite.config";
 
 const browser = "firefox";
@@ -8,31 +9,18 @@ const browserOutDir = `${outDir}/${browser}`;
 
 // Define browser-specific configuration
 export default defineConfig(() => {
-	// Create browser-specific config without CRXJS (Firefox V2 not supported)
+	// Create browser-specific config
 	const browserConfig: UserConfig = {
 		build: {
 			outDir: browserOutDir,
-			rollupOptions: {
-				input: {
-					"content-script": resolve(__dirname, "src/content-script/index.ts"),
-					"background": resolve(__dirname, "src/background/index.ts"),
-					iframe: resolve(__dirname, "src/ui/content-script-iframe/index.html"),
-				},
-				output: {
-					entryFileNames: (chunkInfo) => {
-						const name = chunkInfo.name;
-						if (name === "content-script") {
-							return "src/content-script/index.js";
-						}
-						if (name === "background") {
-							return "src/background/index.js";
-						}
-						return "[name]-[hash].js";
-					},
-				},
-			},
 		},
-		plugins: [],
+		plugins: [
+			crx({
+				manifest,
+				browser,
+				contentScripts: { injectCss: true },
+			}),
+		],
 	};
 
 	// Merge with base config and return

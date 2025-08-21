@@ -3,7 +3,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import "./index.css";
 
-// import 'monaco-editor/esm/vs/language/typescript/monaco.contribution';
+import 'monaco-editor/esm/vs/language/typescript/monaco.contribution';
 import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 import cssWorker from "monaco-editor/esm/vs/language/css/css.worker?worker";
 import htmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";

@@ -12,6 +12,15 @@ export default defineConfig({
 	optimizeDeps: {
 		include: ["monaco-editor"],
 	},
+	worker: {
+		format: "es",
+		rollupOptions: {
+			output: {
+				entryFileNames: "[name].worker.js",
+				chunkFileNames: "[name]-[hash].js",
+			},
+		},
+	},
 	server: {
 		port: 5173,
 		strictPort: true,
@@ -35,6 +44,7 @@ export default defineConfig({
 	build: {
 		watch: IS_DEV ? {} : undefined,
 		sourcemap: IS_DEV ? "inline" : false,
+		chunkSizeWarningLimit: 1000,
 		rollupOptions: {
 			input: {
 				iframe: resolve(__dirname, "src/ui/content-script-iframe/index.html"),
