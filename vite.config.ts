@@ -1,22 +1,13 @@
-import { crx } from "@crxjs/vite-plugin";
 import ui from "@nuxt/ui/vite";
 import vue from "@vitejs/plugin-vue";
 import { resolve } from "path";
 import { defineConfig } from "vite";
-import manifest from "./manifest.config.ts";
 
 const IS_DEV = process.env.NODE_ENV === "development";
-console.log(IS_DEV);
 
-// https://vite.dev/config/
+// Base configuration shared between Chrome and Firefox
 export default defineConfig({
-	plugins: [
-		vue(),
-		ui(),
-		crx({
-			manifest,
-		}),
-	],
+	plugins: [vue(), ui()],
 	optimizeDeps: {
 		include: ["monaco-editor"],
 	},
@@ -41,6 +32,8 @@ export default defineConfig({
 		},
 	},
 	build: {
+		watch: IS_DEV ? {} : undefined,
+		sourcemap: IS_DEV ? "inline" : false,
 		rollupOptions: {
 			input: {
 				iframe: resolve(__dirname, "src/ui/content-script-iframe/index.html"),

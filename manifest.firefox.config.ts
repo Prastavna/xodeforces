@@ -23,9 +23,11 @@ export default {
 			run_at: "document_end",
 		},
 	],
-	// browser_action: {
-	//     default_popup: "src/ui/action-popup/index.html"
-	// },
+	background: {
+		scripts: ["src/background/index.ts"],
+		type: "module",
+		persistent: false,
+	},
 	content_security_policy:
 		"script-src 'self' http://localhost:5173; worker-src 'self' http://localhost:5173; connect-src 'self' https://api.iconify.design https://api.simplesvg.com ws://localhost:5173 http://localhost:5173; object-src 'self'; style-src 'self' 'unsafe-inline';",
 	web_accessible_resources: [
@@ -34,6 +36,12 @@ export default {
 		"src/ui/content-script-iframe/index.css",
 		"*.worker.js",
 		"monaco-editor/**/*",
+		"assets/*",
+		"*.js",
+		"*.css",
+		"*.ttf",
+		"iframe*.js",
+		"iframe*.css"
 	],
 	applications: {
 		gecko: {

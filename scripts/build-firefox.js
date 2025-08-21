@@ -11,7 +11,7 @@ const distDir = resolve(rootDir, 'dist-firefox');
 
 // Build with Vite
 console.log('Building Firefox extension...');
-execSync('vite build --config vite.config.firefox.ts', { 
+execSync('vite build --config vite.firefox.config.ts', { 
   cwd: rootDir, 
   stdio: 'inherit' 
 });

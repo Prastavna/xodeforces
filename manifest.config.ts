@@ -1,7 +1,7 @@
 import type { ManifestV3Export } from "@crxjs/vite-plugin";
 import packageJson from "./package.json";
 
-export default {
+const manifestConfig = {
 	name: packageJson.name,
 	version: packageJson.version,
 	description: packageJson.description,
@@ -45,3 +45,5 @@ export default {
 		},
 	],
 } satisfies ManifestV3Export;
+
+export default manifestConfig;

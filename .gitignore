@@ -28,5 +28,6 @@ components.d.ts
 # Build
 dist
 dist-firefox
+dist-chrome
 dist-ssr
 *.zip
