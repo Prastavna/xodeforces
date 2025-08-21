@@ -6,9 +6,9 @@ const getRuntimeURL = (path: string): string => {
 	if (typeof chrome !== "undefined" && chrome.runtime?.getURL) {
 		return chrome.runtime.getURL(path);
 	}
-	// @ts-ignore - Firefox browser API
+	// @ts-expect-error - Firefox browser API
 	if (typeof browser !== "undefined" && browser.runtime?.getURL) {
-		// @ts-ignore
+		// @ts-expect-error
 		return browser.runtime.getURL(path);
 	}
 	throw new Error("Extension runtime API not available");
@@ -25,6 +25,7 @@ const IFRAME_WIDTH_KEY = "codeforces-iframe-width";
 
 if (submitBtn) {
 	const button = document.createElement("input");
+	button.id = "xodeforces-open-editor-button";
 	button.type = "button";
 	button.style.width = submitBtn.style.width;
 	button.style.fontSize = submitBtn.style.fontSize;
@@ -33,9 +34,10 @@ if (submitBtn) {
 	submitBtn.parentNode?.insertBefore(button, submitBtn);
 
 	button.onclick = () => {
+		const isVisible = button.value === "Close Editor";
 		const iframe = createIframe();
 		if (iframe && codeforcesBody) {
-			const isVisible = iframe.style.display !== "none";
+			// const isVisible = iframe.style.display !== "none";
 			button.value = isVisible ? "Open Editor" : "Close Editor";
 			document.body.style.margin = isVisible ? "0" : "unset";
 			codeforcesBody.style.margin = isVisible ? "0 auto" : "unset";
@@ -43,6 +45,14 @@ if (submitBtn) {
 			codeforcesBody.style.maxWidth = isVisible ? "1200px" : "unset";
 			codeforcesBody.style.minWidth = isVisible ? "920px" : "unset";
 			iframe.style.display = isVisible ? "none" : "flex";
+
+			if (isVisible) {
+				codeforcesBody.style.width = "unset";
+				codeforcesBody.style.overflowY = "unset";
+			} else {
+				codeforcesBody.style.width = `${100 - getSavedWidth()}%`;
+				codeforcesBody.style.overflowY = "hidden";
+			}
 		}
 	};
 }
@@ -143,11 +153,6 @@ function createIframe() {
 		codeforcesBody.parentNode?.appendChild(iframe);
 		document.body.appendChild(resizeOverlay);
 		setupResizeHandling();
-
-		// Apply saved width to main content
-		const remainingWidth = 100 - savedWidth;
-		codeforcesBody.style.width = `${remainingWidth}%`;
-		codeforcesBody.style.flexShrink = "0";
 	}
 
 	return iframe;

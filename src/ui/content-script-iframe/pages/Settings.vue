@@ -68,24 +68,18 @@
               <div class="flex justify-between items-center">
                 <label class="text-sm font-medium">
                   {{ selectedLanguageLabel }} Template
+                  <span v-if="hasCustomSnippet" class="text-xs text-blue-600 ml-2">(Custom)</span>
+                  <span v-else class="text-xs text-gray-500 ml-2">(Default)</span>
                 </label>
                 <div class="flex gap-2">
                   <UButton 
-                    @click="loadCompetitiveTemplate"
-                    variant="ghost"
-                    size="sm"
-                    icon="i-heroicons-trophy"
-                    title="Load competitive programming template"
-                  >
-                    CP Template
-                  </UButton>
-                  <UButton 
-                    @click="resetToDefault"
+                    @click="resetToTemplate"
                     variant="ghost"
                     size="sm"
                     icon="i-heroicons-arrow-path"
+                    title="Reset to competitive programming template"
                   >
-                    Reset to Default
+                    Reset to Template
                   </UButton>
                   <UButton 
                     @click="saveSnippet"
@@ -141,7 +135,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { competitiveTemplates } from "../../../constants/competitive-templates";
 import { languages } from "../../../constants/languages";
 import { themes } from "../../../constants/themes";
@@ -196,12 +190,31 @@ const selectedLanguageLabel = computed(() => {
 	);
 });
 
+const hasCustomSnippet = computed(() => {
+	if (!selectedLanguage.value) return false;
+	return snippetStore.getSnippet(selectedLanguage.value) !== null;
+});
+
+// Load template when language changes
+const loadTemplateForLanguage = (lang: string) => {
+	if (lang) {
+		const snippet = snippetStore.getSnippet(lang);
+		const defaultSnippet =
+			languages[lang as keyof typeof languages]?.sample || "";
+		snippetCode.value = snippet || defaultSnippet;
+	}
+};
+
 watch(selectedLanguage, (newLang) => {
 	if (newLang) {
-		const snippet = snippetStore.getSnippet(newLang);
-		const defaultSnippet =
-			languages[newLang as keyof typeof languages]?.sample || "";
-		snippetCode.value = snippet || defaultSnippet;
+		loadTemplateForLanguage(newLang);
+	}
+});
+
+// Load initial content when component mounts
+onMounted(() => {
+	if (selectedLanguage.value) {
+		loadTemplateForLanguage(selectedLanguage.value);
 	}
 });
 
@@ -219,26 +232,12 @@ const saveSnippet = () => {
 	}
 };
 
-const resetToDefault = () => {
+const resetToTemplate = () => {
 	if (selectedLanguage.value) {
-		const defaultSnippet =
-			languages[selectedLanguage.value as keyof typeof languages]?.sample || "";
-		snippetCode.value = defaultSnippet;
-	}
-};
-
-const loadCompetitiveTemplate = () => {
-	if (selectedLanguage.value) {
+		// Load the competitive template (now stored in languages.sample)
 		const template =
-			competitiveTemplates[
-				selectedLanguage.value as keyof typeof competitiveTemplates
-			];
-		if (template) {
-			snippetCode.value = template;
-		} else {
-			// Fallback to default if no competitive template exists
-			resetToDefault();
-		}
+			languages[selectedLanguage.value as keyof typeof languages]?.sample || "";
+		snippetCode.value = template;
 	}
 };
 

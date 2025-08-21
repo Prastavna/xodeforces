@@ -1,78 +1,80 @@
+import { competitiveTemplates } from "./competitive-templates";
+
 export const languages = {
 	javascript: {
 		label: "JavaScript",
 		value: "javascript",
-		sample: `console.log("Hello World");`,
+		sample: competitiveTemplates.javascript,
 		extension: ".js",
 		mime: "text/javascript",
 	},
 	typescript: {
 		label: "TypeScript",
 		value: "typescript",
-		sample: `console.log("Hello World");`,
+		sample: `console.log("Hello World");`, // No competitive template available
 		extension: ".ts",
 		mime: "text/typescript",
 	},
 	python: {
 		label: "Python",
 		value: "python",
-		sample: `print("Hello World")`,
+		sample: competitiveTemplates.python,
 		extension: ".py",
 		mime: "text/python",
 	},
 	java: {
 		label: "Java",
 		value: "java",
-		sample: `public class HelloWorld {\n\tpublic static void main(String[] args) {\n\t\tSystem.out.println("Hello World");\n\t}\n}`,
+		sample: competitiveTemplates.java,
 		extension: ".java",
 		mime: "text/java",
 	},
 	csharp: {
 		label: "C#",
 		value: "csharp",
-		sample: `Console.WriteLine("Hello World");`,
+		sample: competitiveTemplates.csharp,
 		extension: ".cs",
 		mime: "text/csharp",
 	},
 	php: {
 		label: "PHP",
 		value: "php",
-		sample: `echo "Hello World";`,
+		sample: `<?php\necho "Hello World";\n?>`, // No competitive template available
 		extension: ".php",
 		mime: "text/php",
 	},
 	sql: {
 		label: "SQL",
 		value: "sql",
-		sample: `SELECT * FROM users;`,
+		sample: `SELECT * FROM users;`, // No competitive template available
 		extension: ".sql",
 		mime: "text/sql",
 	},
 	go: {
 		label: "Go",
 		value: "go",
-		sample: `import "fmt"\nfunc main() {\n\tfmt.Println("Hello World")\n}`,
+		sample: competitiveTemplates.go,
 		extension: ".go",
 		mime: "text/go",
 	},
 	rust: {
 		label: "Rust",
 		value: "rust",
-		sample: `println!("Hello World");`,
+		sample: competitiveTemplates.rust,
 		extension: ".rs",
 		mime: "text/rust",
 	},
 	cpp: {
 		label: "C++",
 		value: "cpp",
-		sample: `#include <iostream> \nusing namespace std;\nint main() {\n\tcout << "Hello, Monaco Editor!" << endl;\n\treturn 0;\n}`,
+		sample: competitiveTemplates.cpp,
 		extension: ".cpp",
 		mime: "text/cpp",
 	},
 	c: {
 		label: "C",
 		value: "c",
-		sample: `#include <stdio.h>\nint main() {\n\tprintf("Hello, Monaco Editor!");\n\treturn 0;\n}`,
+		sample: competitiveTemplates.c,
 		extension: ".c",
 		mime: "text/c",
 	},

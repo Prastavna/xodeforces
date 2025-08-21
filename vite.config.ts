@@ -2,12 +2,13 @@ import ui from "@nuxt/ui/vite";
 import vue from "@vitejs/plugin-vue";
 import { resolve } from "path";
 import { defineConfig } from "vite";
+import { uiConfig } from "./nuxt.ui.config";
 
 const IS_DEV = process.env.NODE_ENV === "development";
 
 // Base configuration shared between Chrome and Firefox
 export default defineConfig({
-	plugins: [vue(), ui()],
+	plugins: [vue(), ui(uiConfig)],
 	optimizeDeps: {
 		include: ["monaco-editor"],
 	},

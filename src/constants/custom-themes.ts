@@ -48,9 +48,9 @@ export const loadTheme = async (themeName: string) => {
 			if (typeof chrome !== "undefined" && chrome.runtime?.getURL) {
 				return chrome.runtime.getURL(path);
 			}
-			// @ts-ignore - Firefox browser API
+			// @ts-expect-error - Firefox browser API
 			if (typeof browser !== "undefined" && browser.runtime?.getURL) {
-				// @ts-ignore
+				// @ts-expect-error
 				return browser.runtime.getURL(path);
 			}
 			return window.location.origin;

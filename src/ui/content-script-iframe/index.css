@@ -12,3 +12,7 @@ button,
 :disabled {
 	cursor: default; /* Ensures disabled buttons don't get pointer cursor */
 }
+
+[data-reka-popper-content-wrapper] {
+	z-index: 5;
+}
