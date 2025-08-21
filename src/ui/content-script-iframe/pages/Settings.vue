@@ -136,7 +136,6 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
-import { competitiveTemplates } from "../../../constants/competitive-templates";
 import { languages } from "../../../constants/languages";
 import { themes } from "../../../constants/themes";
 import { useEditorConfig } from "../../../stores/editor-config";

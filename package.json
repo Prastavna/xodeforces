@@ -10,7 +10,7 @@
 		"dev:firefox": "vite build --mode development --watch --config vite.firefox.config.ts",
 		"build": "npm run build:chrome && npm run build:firefox",
 		"build:chrome": "vue-tsc -b && vite build --config vite.chrome.config.ts",
-		"build:firefox": "vue-tsc -b && node scripts/build-firefox.js",
+		"build:firefox": "vue-tsc -b && vite build --config vite.firefox.config.ts",
 		"preview": "vite preview",
 		"type-check": "vue-tsc --noEmit",
 		"check:fix": "bunx biome check --fix"
