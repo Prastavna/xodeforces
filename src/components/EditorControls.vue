@@ -16,14 +16,14 @@
             <div class="flex gap-2 pr-4">
                 <RunButton
                     :is-running="executionStore.isRunning"
-                    :has-judge0-config="judge0Config.isConnected"
+                    :has-judge0-config="judge0Config.hasValidConfig"
                     :has-code="!!editorConfig.code.trim()"
                     :error="executionStore.error"
                     @run="handleRunCode"
                 />
                 <UButton @click="editorConfig.resetCode" icon="i-heroicons-trash" variant="ghost" color="error"></UButton>
                 <UPopover mode="hover" :open-delay="300" :close-delay="100">
-                    <UButton @click="loadTemplate" :icon="hasSnippet ? 'i-heroicons-code-bracket-square' : 'i-heroicons-code-bracket'" variant="ghost" :title="hasSnippet ? 'Load Custom Snippet' : 'Load Competitive Template'" size="sm" :color="hasSnippet ? 'primary' : 'gray'"></UButton>
+                    <UButton @click="loadTemplate" :icon="hasSnippet ? 'i-heroicons-code-bracket-square' : 'i-heroicons-code-bracket'" variant="ghost" :title="hasSnippet ? 'Load Custom Snippet' : 'Load Competitive Template'" size="sm" color="neutral"></UButton>
                     <template #content>
                         <div class="p-3 max-w-md">
                             <h4 class="text-sm font-medium mb-2">{{ hasSnippet ? 'Custom Snippet Preview' : 'Competitive Template Preview' }}</h4>
@@ -31,7 +31,7 @@
                         </div>
                     </template>
                 </UPopover>
-                    <UButton @click="editorConfig.formatCode" icon="i-heroicons-sparkles" variant="ghost" title="Format Code" size="sm"></UButton>
+                <UButton @click="editorConfig.formatCode" icon="i-heroicons-sparkles" variant="ghost" title="Format Code" size="sm"/>
                 <UButton @click="editorConfig.submitCode" icon="i-heroicons-paper-clip">Attach File</UButton>
             </div>
         </div>
@@ -42,9 +42,9 @@
 import { computed, onMounted } from "vue";
 import { languages } from "../constants/languages";
 import { useEditorConfig } from "../stores/editor-config";
-import { useSnippetStore } from "../stores/snippet-store";
 import { useExecutionStore } from "../stores/execution-store";
 import { useJudge0Config } from "../stores/judge0-config";
+import { useSnippetStore } from "../stores/snippet-store";
 import RunButton from "./RunButton.vue";
 
 const editorConfig = useEditorConfig();

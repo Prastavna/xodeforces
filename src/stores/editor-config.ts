@@ -71,6 +71,7 @@ export const useEditorConfig = defineStore("editor-config", {
 			formatOnType: true,
 			tabSize: Number(storage.local.get("tabSize")) || 4,
 			insertSpaces: storage.local.get("insertSpaces") !== "false",
+			theme: storage.local.get("theme") || "vs-dark",
 		} satisfies monaco.editor.IStandaloneEditorConstructionOptions,
 	}),
 	actions: {
@@ -96,10 +97,6 @@ export const useEditorConfig = defineStore("editor-config", {
 			const sampleCode = languages[language as keyof typeof languages].sample;
 			this.code = sampleCode || "";
 		},
-		changeTheme(theme: string) {
-			this.theme = theme;
-			storage.local.set("theme", theme);
-		},
 		setEditorInstance(editorInstance: monaco.editor.IStandaloneCodeEditor) {
 			this.editorInstance = editorInstance;
 		},
@@ -123,19 +120,29 @@ export const useEditorConfig = defineStore("editor-config", {
 			this.code = "";
 			storage.session.set("code", "");
 		},
-		updateEditorConfig(tabSize: number, insertSpaces: boolean) {
+		updateEditorConfig({
+			tabSize,
+			indentationType,
+			theme,
+		}: {
+			tabSize: number;
+			indentationType: "spaces" | "tabs";
+			theme: string;
+		}) {
+			this.theme = theme;
 			this.tabSize = tabSize;
-			this.insertSpaces = insertSpaces;
+			this.insertSpaces = indentationType === "spaces";
 			this.editorOptions.tabSize = tabSize;
-			this.editorOptions.insertSpaces = insertSpaces;
+			this.editorOptions.insertSpaces = this.insertSpaces;
 
 			storage.local.set("tabSize", tabSize.toString());
-			storage.local.set("insertSpaces", insertSpaces.toString());
+			storage.local.set("insertSpaces", this.insertSpaces.toString());
+			storage.local.set("theme", theme);
 
 			if (this.editorInstance) {
 				this.editorInstance.updateOptions({
 					tabSize,
-					insertSpaces,
+					insertSpaces: this.insertSpaces,
 				});
 			}
 		},

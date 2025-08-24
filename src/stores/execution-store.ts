@@ -1,9 +1,9 @@
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
-import { useJudge0Config } from "./judge0-config";
-import { useEditorConfig } from "./editor-config";
+import { computed, ref } from "vue";
+import { JUDGE0_LANGUAGE_MAP } from "../constants/judge0";
 import type { Judge0SubmissionResult } from "../services/judge0";
-import { JUDGE0_LANGUAGE_MAP } from "../constants/judge0-languages";
+import { useEditorConfig } from "./editor-config";
+import { useJudge0Config } from "./judge0-config";
 
 export const useExecutionStore = defineStore("execution", () => {
 	const judge0Config = useJudge0Config();
@@ -21,8 +21,7 @@ export const useExecutionStore = defineStore("execution", () => {
 
 	const canExecute = computed(() => {
 		return (
-			judge0Config.config.baseUrl &&
-			judge0Config.isConnected &&
+			judge0Config.hasValidConfig &&
 			editorConfig.code.trim().length > 0 &&
 			currentLanguageId.value !== undefined
 		);

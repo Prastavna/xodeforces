@@ -140,7 +140,7 @@ function createIframe() {
 
 	// Create the actual iframe
 	const iframeElement = new DOMParser().parseFromString(
-		`<iframe class="crx-iframe ${name}" src="${src}" title="${name}" sandbox="allow-scripts allow-same-origin" style="width: 100%; height: 100%; border: none; background: white;"></iframe>`,
+		`<iframe class="crx-iframe ${name}" src="${src}" title="${name}" sandbox="allow-scripts allow-popups allow-same-origin" style="width: 100%; height: 100%; border: none; background: white;"></iframe>`,
 		"text/html",
 	).body.firstElementChild as HTMLElement;
 

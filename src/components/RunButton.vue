@@ -4,7 +4,7 @@
     :disabled="disabled || !canRun"
     @click="handleRun"
     :color="buttonColor"
-    :variant="buttonVariant"
+    variant="ghost"
     size="sm"
     :icon="buttonIcon"
   >
@@ -23,27 +23,20 @@ interface Props {
 	error?: string | null;
 }
 
-interface Emits {
-	(e: "run"): void;
-}
+type Emits = (e: "run") => void;
 
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const canRun = computed(() => {
-	return props.hasJudge0Config && props.hasCode && !props.error;
+	return props.hasJudge0Config && props.hasCode;
 });
 
 const buttonColor = computed(() => {
-	if (props.isRunning) return "blue";
-	if (!props.hasJudge0Config) return "gray";
-	if (props.error) return "red";
-	return "green";
-});
-
-const buttonVariant = computed(() => {
-	if (!canRun.value) return "soft";
-	return "solid";
+	if (props.isRunning) return "secondary";
+	if (!props.hasJudge0Config) return "error";
+	if (props.error) return "error";
+	return "primary";
 });
 
 const buttonIcon = computed(() => {
@@ -56,7 +49,6 @@ const buttonIcon = computed(() => {
 const buttonText = computed(() => {
 	if (props.isRunning) return "Running...";
 	if (!props.hasJudge0Config) return "Configure Judge0";
-	if (props.error) return "Error";
 	if (!props.hasCode) return "No Code";
 	return "Run Code";
 });

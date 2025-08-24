@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
+import { computed, ref } from "vue";
+import { DEFAULT_JUDGE0_CONFIG } from "../constants/judge0";
+import { type Judge0Config, Judge0Service } from "../services/judge0";
 import { storage } from "../services/storage";
-import { Judge0Service, type Judge0Config } from "../services/judge0";
-import { DEFAULT_JUDGE0_CONFIG } from "../constants/judge0-languages";
 
 const STORAGE_KEY = "judge0-config";
 
@@ -13,6 +13,9 @@ export const useJudge0Config = defineStore("judge0-config", () => {
 	const error = ref<string | null>(null);
 
 	const judge0Service = computed(() => new Judge0Service(config.value));
+	const hasValidConfig = computed(
+		() => !!config.value.baseUrl && !!config.value.apiKey,
+	);
 
 	const loadConfig = () => {
 		try {
@@ -83,6 +86,7 @@ export const useJudge0Config = defineStore("judge0-config", () => {
 
 	return {
 		config: computed(() => config.value),
+		hasValidConfig,
 		judge0Service,
 		isConnected: computed(() => isConnected.value),
 		isLoading: computed(() => isLoading.value),

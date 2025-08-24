@@ -44,15 +44,15 @@
   
 <script setup lang="ts">
 import * as monaco from "monaco-editor";
-import { ref, toRef, computed } from "vue";
+import { computed, ref, toRef } from "vue";
 import EditorControls from "../../../components/EditorControls.vue";
-import MonacoEditor from "../../../components/MonacoEditor.vue";
-import ResizablePanel from "../../../components/ResizablePanel.vue";
 import InputPanel from "../../../components/InputPanel.vue";
+import MonacoEditor from "../../../components/MonacoEditor.vue";
 import OutputPanel from "../../../components/OutputPanel.vue";
+import ResizablePanel from "../../../components/ResizablePanel.vue";
+import { languages } from "../../../constants/languages";
 import { useEditorConfig } from "../../../stores/editor-config";
 import { useExecutionStore } from "../../../stores/execution-store";
-import { languages } from "../../../constants/languages";
 
 const monacoEditor = ref(null);
 

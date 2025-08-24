@@ -2,16 +2,17 @@
   <div class="h-full flex flex-col bg-white border border-gray-200 rounded-lg">
     <div class="flex items-center justify-between px-3 py-2 border-b border-gray-200 bg-gray-50 rounded-t-lg">
       <div class="flex items-center gap-2">
-        <Icon name="i-heroicons-keyboard" class="w-4 h-4 text-gray-600" />
+        <UIcon name="i-heroicons-keyboard" class="w-4 h-4 text-gray-600" />
         <h3 class="text-sm font-medium text-gray-700">Custom Input</h3>
       </div>
       <div class="flex items-center gap-2">
         <UButton
           v-if="input.trim()"
           @click="clearInput"
+		  color="error"
           size="xs"
           variant="ghost"
-          icon="i-heroicons-x-mark"
+          icon="i-heroicons-trash"
           :disabled="readonly"
         >
           Clear
@@ -41,11 +42,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
 import type * as monaco from "monaco-editor";
-import MonacoEditor from "./MonacoEditor.vue";
-import { useEditorConfig } from "../stores/editor-config";
+import { computed, ref, watch } from "vue";
 import { storage } from "../services/storage";
+import { useEditorConfig } from "../stores/editor-config";
+import type MonacoEditor from "./MonacoEditor.vue";
 
 interface Props {
 	modelValue?: string;
