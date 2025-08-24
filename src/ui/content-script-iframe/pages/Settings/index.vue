@@ -2,7 +2,7 @@
   <div class="py-4 px-2 h-full overflow-y-auto">
     <div class="mb-6">
       <h2 class="text-xl font-semibold mb-2">Settings</h2>
-      <p class="text-sm text-gray-600">Manage your editor preferences and code snippets</p>
+      <p class="text-sm text-gray-600">Manage your settings/preferences here</p>
     </div>
 
     <div class="space-y-6">
