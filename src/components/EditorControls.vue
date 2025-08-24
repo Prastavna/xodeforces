@@ -14,6 +14,13 @@
             </div>
 
             <div class="flex gap-2 pr-4">
+                <RunButton
+                    :is-running="executionStore.isRunning"
+                    :has-judge0-config="judge0Config.isConnected"
+                    :has-code="!!editorConfig.code.trim()"
+                    :error="executionStore.error"
+                    @run="handleRunCode"
+                />
                 <UButton @click="editorConfig.resetCode" icon="i-heroicons-trash" variant="ghost" color="error"></UButton>
                 <UPopover mode="hover" :open-delay="300" :close-delay="100">
                     <UButton @click="loadTemplate" :icon="hasSnippet ? 'i-heroicons-code-bracket-square' : 'i-heroicons-code-bracket'" variant="ghost" :title="hasSnippet ? 'Load Custom Snippet' : 'Load Competitive Template'" size="sm" :color="hasSnippet ? 'primary' : 'gray'"></UButton>
@@ -36,9 +43,14 @@ import { computed, onMounted } from "vue";
 import { languages } from "../constants/languages";
 import { useEditorConfig } from "../stores/editor-config";
 import { useSnippetStore } from "../stores/snippet-store";
+import { useExecutionStore } from "../stores/execution-store";
+import { useJudge0Config } from "../stores/judge0-config";
+import RunButton from "./RunButton.vue";
 
 const editorConfig = useEditorConfig();
 const snippetStore = useSnippetStore();
+const executionStore = useExecutionStore();
+const judge0Config = useJudge0Config();
 
 onMounted(() => {
 	snippetStore.loadSnippets();
@@ -77,5 +89,9 @@ const loadTemplate = () => {
 			languages[editorConfig.language as keyof typeof languages]?.sample || "";
 		editorConfig.onCodeChange(competitiveTemplate);
 	}
+};
+
+const handleRunCode = async () => {
+	await executionStore.executeCode();
 };
 </script>

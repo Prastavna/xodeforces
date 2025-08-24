@@ -7,6 +7,74 @@
 
     <div class="space-y-6">
       <div class="border border-gray-200 rounded-lg p-4">
+        <h3 class="text-lg font-medium mb-4">Judge0 Code Execution</h3>
+        <p class="text-sm text-gray-600 mb-4">
+          Configure Judge0 API to run your code with custom inputs
+        </p>
+        
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-2">Base URL</label>
+            <USelect
+              v-model="judge0BaseUrl"
+              :items="baseUrlOptions"
+              value-attribute="value"
+              label-attribute="label"
+              class="w-full"
+              @update:modelValue="handleBaseUrlChange"
+            />
+          </div>
+          
+          <div v-if="judge0BaseUrl === ''" class="space-y-2">
+            <label class="block text-sm font-medium">Custom Base URL</label>
+            <UInput
+              v-model="customBaseUrl"
+              placeholder="https://your-judge0-instance.com"
+              class="w-full"
+              @blur="handleCustomUrlChange"
+            />
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium mb-2">
+              API Key
+              <span class="text-xs text-gray-500 ml-2">
+                {{ isRapidApi ? '(Required for RapidAPI)' : '(Optional)' }}
+              </span>
+            </label>
+            <UInput
+              v-model="judge0ApiKey"
+              type="password"
+              placeholder="Enter your API key"
+              class="w-full"
+              @blur="handleApiKeyChange"
+            />
+          </div>
+          
+          <div class="flex items-center gap-3 pt-2">
+            <UButton
+              @click="testJudge0Connection"
+              :loading="judge0Config.isLoading"
+              :disabled="!judge0Config.config.baseUrl"
+              size="sm"
+            >
+              Test Connection
+            </UButton>
+            
+            <div v-if="judge0Config.isConnected" class="flex items-center gap-2 text-green-600">
+              <Icon name="i-heroicons-check-circle" class="w-4 h-4" />
+              <span class="text-sm">Connected</span>
+            </div>
+            
+            <div v-else-if="judge0Config.error" class="flex items-center gap-2 text-red-600">
+              <Icon name="i-heroicons-x-circle" class="w-4 h-4" />
+              <span class="text-sm">{{ judge0Config.error }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="border border-gray-200 rounded-lg p-4">
         <h3 class="text-lg font-medium mb-4">Editor Settings</h3>
         <p class="text-sm text-gray-600 mb-4">
           Configure your editor behavior and appearance
@@ -140,9 +208,12 @@ import { languages } from "../../../constants/languages";
 import { themes } from "../../../constants/themes";
 import { useEditorConfig } from "../../../stores/editor-config";
 import { useSnippetStore } from "../../../stores/snippet-store";
+import { useJudge0Config } from "../../../stores/judge0-config";
+import { JUDGE0_BASE_URLS } from "../../../constants/judge0-languages";
 
 const snippetStore = useSnippetStore();
 const editorConfig = useEditorConfig();
+const judge0Config = useJudge0Config();
 const selectedLanguage = ref(editorConfig.language);
 const snippetCode = ref("");
 const fileInput = ref<HTMLInputElement>();
@@ -150,6 +221,11 @@ const toast = useToast();
 
 const tabSize = ref(editorConfig.tabSize);
 const indentationType = ref(editorConfig.insertSpaces ? "spaces" : "tabs");
+
+// Judge0 settings
+const judge0BaseUrl = ref(judge0Config.config.baseUrl);
+const judge0ApiKey = ref(judge0Config.config.apiKey || "");
+const customBaseUrl = ref("");
 
 const tabSizeOptions = [
 	{ value: 2, label: "2" },
@@ -171,6 +247,12 @@ const themeItems = Object.values(themes).map((theme) => ({
 	value: theme.value,
 	label: theme.label,
 }));
+
+const baseUrlOptions = computed(() => JUDGE0_BASE_URLS);
+
+const isRapidApi = computed(
+	() => judge0BaseUrl.value?.includes("rapidapi.com") || false,
+);
 
 const snippetAccordionItems = [
 	{
@@ -316,5 +398,61 @@ const handleFileImport = (event: Event) => {
 		}
 	};
 	reader.readAsText(file);
+};
+
+// Judge0 handlers
+const handleBaseUrlChange = (value: string) => {
+	if (value === "") {
+		// Custom URL selected
+		return;
+	}
+	updateJudge0Config({ baseUrl: value });
+};
+
+const handleCustomUrlChange = () => {
+	if (judge0BaseUrl.value === "" && customBaseUrl.value.trim()) {
+		updateJudge0Config({ baseUrl: customBaseUrl.value.trim() });
+	}
+};
+
+const handleApiKeyChange = () => {
+	updateJudge0Config({ apiKey: judge0ApiKey.value });
+};
+
+const updateJudge0Config = async (config: {
+	baseUrl?: string;
+	apiKey?: string;
+}) => {
+	try {
+		await judge0Config.updateConfig(config);
+		toast.add({
+			title: "Judge0 settings updated",
+			description: "Judge0 configuration updated successfully",
+			color: "success",
+		});
+	} catch (error) {
+		toast.add({
+			title: "Failed to update Judge0 settings",
+			description: error instanceof Error ? error.message : "Unknown error",
+			color: "error",
+		});
+	}
+};
+
+const testJudge0Connection = async () => {
+	const success = await judge0Config.testConnection();
+	if (success) {
+		toast.add({
+			title: "Connection successful",
+			description: "Successfully connected to Judge0 API",
+			color: "success",
+		});
+	} else {
+		toast.add({
+			title: "Connection failed",
+			description: judge0Config.error || "Failed to connect to Judge0 API",
+			color: "error",
+		});
+	}
 };
 </script>
