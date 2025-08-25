@@ -16,7 +16,7 @@
 </div>
 
 > [!WARNING]
-> Firefox has a limit to file sizes of 5MB. That's why the Firefox version of Xodeforces is not available for download. You can install it from the [Firefox Add-on Store](https://addons.mozilla.org/en-US/firefox/addon/xodeforces/).
+> Firefox has a limit to file sizes of 5MB. That's why the Firefox version of Xodeforces is not available in Firefox Addon Store. You can install it from the [releases](https://github.com/Prastavna/xodeforces/releases/) page
 > We are waiting for this PR to be merged: [PR](https://github.com/mozilla/addons-linter/pull/5765)
 
 ## ✨ Key Features

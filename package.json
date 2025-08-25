@@ -1,8 +1,8 @@
 {
 	"name": "xodeforces",
 	"private": true,
-	"version": "0.1.0",
-	"description": "Web Code editor for Codeforces problems",
+	"version": "1.0.0",
+	"description": "Web based Code-editor for Codeforces",
 	"type": "module",
 	"scripts": {
 		"dev": "npm run dev:chrome",

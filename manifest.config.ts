@@ -6,7 +6,7 @@ const manifestConfig = {
 	version: packageJson.version,
 	description: packageJson.description,
 	manifest_version: 3,
-	icons: {
+icons: {
 		"16": "icon16.png",
 		"32": "icon32.png",
 		"48": "icon48.png",
@@ -29,7 +29,7 @@ const manifestConfig = {
 	// },
 	content_security_policy: {
 		extension_pages:
-			"script-src 'self' http://localhost:5173; worker-src 'self' http://localhost:5173; connect-src 'self' https://api.iconify.design https://api.simplesvg.com ws://localhost:5173 http://localhost:5173; object-src 'self'; style-src 'self' 'unsafe-inline';",
+			"script-src 'self' http://localhost:5173; worker-src 'self' http://localhost:5173; connect-src 'self' https://judge0-ce.p.rapidapi.com https://api.iconify.design https://api.simplesvg.com ws://localhost:5173 http://localhost:5173; object-src 'self'; style-src 'self' 'unsafe-inline';",
 	},
 	web_accessible_resources: [
 		{
