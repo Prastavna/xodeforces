@@ -64,8 +64,8 @@
 
 
 <script setup lang="ts">
-import { ref } from "vue";
 import { useToast } from "@nuxt/ui/composables/useToast";
+import { ref } from "vue";
 import { useJudge0Config } from "../../../../stores/judge0-config";
 
 const toast = useToast();

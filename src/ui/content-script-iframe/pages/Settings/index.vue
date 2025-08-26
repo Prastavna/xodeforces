@@ -59,8 +59,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import { useToast } from "@nuxt/ui/composables/useToast";
+import { ref } from "vue";
 import { themes } from "../../../../constants/themes";
 import { useEditorConfig } from "../../../../stores/editor-config";
 import Judge0 from "./Judge0.vue";

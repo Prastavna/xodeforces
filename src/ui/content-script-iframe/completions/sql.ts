@@ -30,17 +30,37 @@ function extractSQLEntities(code: string) {
 		}
 
 		// Match column names in SELECT statements
-		const selectMatches = line.matchAll(/select\s+([^from]+)/g);
+		const selectMatches = line.matchAll(/select\s+([^from]+)/gi);
 		for (const match of selectMatches) {
 			const columns = match[1];
-			const columnNames = columns
-				.split(",")
-				.map((col) => col.trim().replace(/.*\./, ""));
+			const columnNames = columns.split(",").map((col) =>
+				col
+					.trim()
+					.replace(/.*\./, "")
+					.replace(/\s+as\s+\w+/i, ""),
+			);
 			columnNames.forEach((colName) => {
 				if (colName && colName !== "*" && colName.match(/^\w+$/)) {
 					entities.push({ name: colName, type: "column", line: i + 1 });
 				}
 			});
+		}
+
+		// Match column definitions in CREATE TABLE statements
+		if (line.match(/create\s+table/i)) {
+			// Look for column definitions in the following lines
+			let j = i + 1;
+			while (j < lines.length && !lines[j].trim().match(/^\s*\)\s*;?\s*$/)) {
+				const columnLine = lines[j].trim().toLowerCase();
+				const columnMatch = columnLine.match(
+					/^\s*(\w+)\s+(int|varchar|char|text|datetime|timestamp|decimal|float|double|boolean|bool)/,
+				);
+				if (columnMatch) {
+					const columnName = columnMatch[1];
+					entities.push({ name: columnName, type: "column", line: j + 1 });
+				}
+				j++;
+			}
 		}
 
 		// Match stored procedures and functions
@@ -173,6 +193,91 @@ monaco.languages.registerCompletionItemProvider("sql", {
 			startColumn: word.startColumn,
 			endColumn: word.endColumn,
 		};
+
+		// Get the line up to current position to check for dot notation (table.column)
+		const linePrefix = model.getValueInRange({
+			startLineNumber: position.lineNumber,
+			startColumn: 1,
+			endLineNumber: position.lineNumber,
+			endColumn: position.column,
+		});
+
+		// Check if we're after a dot for table.column reference
+		const dotMatch = linePrefix.match(/(\w+)\.(\w*)$/i);
+		if (dotMatch) {
+			const tableName = dotMatch[1].toLowerCase();
+			const partialColumn = dotMatch[2];
+
+			// Extract entities from the current code
+			const code = model.getValue();
+			const extractedEntities = extractSQLEntities(code);
+
+			// Find if the name before dot is a table
+			const table = extractedEntities.find(
+				(e) => e.name.toLowerCase() === tableName && e.type === "table",
+			);
+			if (table) {
+				// Get all columns that might belong to this table context
+				// In a real implementation, you'd have schema information
+				// For now, suggest common column names and any columns found in the code
+				const columnSuggestions = extractedEntities
+					.filter(
+						(entity) =>
+							entity.type === "column" &&
+							entity.name.toLowerCase().startsWith(partialColumn.toLowerCase()),
+					)
+					.map((column) => ({
+						label: column.name,
+						kind: monaco.languages.CompletionItemKind.Field,
+						insertText: column.name,
+						insertTextRules:
+							monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+						documentation: `Column from ${tableName} table`,
+						range: {
+							startLineNumber: position.lineNumber,
+							endLineNumber: position.lineNumber,
+							startColumn: position.column - partialColumn.length,
+							endColumn: position.column,
+						},
+					}));
+
+				// Add common column names if no specific columns found
+				if (columnSuggestions.length === 0) {
+					const commonColumns = [
+						"id",
+						"name",
+						"created_at",
+						"updated_at",
+						"email",
+						"username",
+						"password",
+						"status",
+						"type",
+						"value",
+						"description",
+					]
+						.filter((col) => col.startsWith(partialColumn.toLowerCase()))
+						.map((col) => ({
+							label: col,
+							kind: monaco.languages.CompletionItemKind.Field,
+							insertText: col,
+							insertTextRules:
+								monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+							documentation: `Common column name for ${tableName}`,
+							range: {
+								startLineNumber: position.lineNumber,
+								endLineNumber: position.lineNumber,
+								startColumn: position.column - partialColumn.length,
+								endColumn: position.column,
+							},
+						}));
+
+					return { suggestions: commonColumns };
+				}
+
+				return { suggestions: columnSuggestions };
+			}
+		}
 
 		// Extract entities from the current code
 		const code = model.getValue();

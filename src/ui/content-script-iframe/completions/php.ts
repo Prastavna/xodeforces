@@ -177,6 +177,218 @@ function getPHPRelatedFunctions(variableName: string, variableType: string) {
 	return suggestions;
 }
 
+// Helper function to get method suggestions for PHP objects
+function getPHPMethods(variableType: string) {
+	const methods: Array<{
+		label: string;
+		insertText: string;
+		documentation: string;
+	}> = [];
+
+	// Array methods (using array functions in PHP context)
+	if (variableType === "array" || variableType === "variable") {
+		// Note: PHP uses functions for arrays, but we can suggest common patterns
+		// These would be used like: array_push($array, $value)
+		methods.push();
+	}
+
+	// String methods (for string objects if any)
+	if (variableType === "string" || variableType === "variable") {
+		// PHP strings don't have methods, they use functions
+		methods.push();
+	}
+
+	// DateTime methods (common PHP object)
+	if (variableType === "DateTime" || variableType.includes("DateTime")) {
+		methods.push(
+			{
+				label: "format",
+				insertText: 'format(${1:"Y-m-d H:i:s"})',
+				documentation: "Format the date",
+			},
+			{
+				label: "setDate",
+				insertText: "setDate(${1:year}, ${2:month}, ${3:day})",
+				documentation: "Set the date",
+			},
+			{
+				label: "setTime",
+				insertText: "setTime(${1:hour}, ${2:minute}, ${3:second})",
+				documentation: "Set the time",
+			},
+			{
+				label: "add",
+				insertText: "add(${1:interval})",
+				documentation: "Add interval to date",
+			},
+			{
+				label: "sub",
+				insertText: "sub(${1:interval})",
+				documentation: "Subtract interval from date",
+			},
+			{
+				label: "diff",
+				insertText: "diff(${1:datetime})",
+				documentation: "Get difference between dates",
+			},
+			{
+				label: "getTimestamp",
+				insertText: "getTimestamp()",
+				documentation: "Get Unix timestamp",
+			},
+		);
+	}
+
+	// PDO methods (database)
+	if (variableType === "PDO" || variableType.includes("PDO")) {
+		methods.push(
+			{
+				label: "prepare",
+				insertText: "prepare(${1:statement})",
+				documentation: "Prepare SQL statement",
+			},
+			{
+				label: "exec",
+				insertText: "exec(${1:statement})",
+				documentation: "Execute SQL statement",
+			},
+			{
+				label: "query",
+				insertText: "query(${1:statement})",
+				documentation: "Execute SQL query",
+			},
+			{
+				label: "beginTransaction",
+				insertText: "beginTransaction()",
+				documentation: "Start transaction",
+			},
+			{
+				label: "commit",
+				insertText: "commit()",
+				documentation: "Commit transaction",
+			},
+			{
+				label: "rollBack",
+				insertText: "rollBack()",
+				documentation: "Roll back transaction",
+			},
+		);
+	}
+
+	// PDOStatement methods
+	if (
+		variableType === "PDOStatement" ||
+		variableType.includes("PDOStatement")
+	) {
+		methods.push(
+			{
+				label: "execute",
+				insertText: "execute(${1:params})",
+				documentation: "Execute prepared statement",
+			},
+			{
+				label: "fetch",
+				insertText: "fetch(${1:PDO::FETCH_ASSOC})",
+				documentation: "Fetch next row",
+			},
+			{
+				label: "fetchAll",
+				insertText: "fetchAll(${1:PDO::FETCH_ASSOC})",
+				documentation: "Fetch all rows",
+			},
+			{
+				label: "fetchColumn",
+				insertText: "fetchColumn(${1:column})",
+				documentation: "Fetch single column",
+			},
+			{
+				label: "bindParam",
+				insertText: "bindParam(${1:parameter}, ${2:variable})",
+				documentation: "Bind parameter to variable",
+			},
+			{
+				label: "bindValue",
+				insertText: "bindValue(${1:parameter}, ${2:value})",
+				documentation: "Bind parameter to value",
+			},
+			{
+				label: "rowCount",
+				insertText: "rowCount()",
+				documentation: "Get number of affected rows",
+			},
+		);
+	}
+
+	// mysqli methods
+	if (variableType === "mysqli" || variableType.includes("mysqli")) {
+		methods.push(
+			{
+				label: "query",
+				insertText: "query(${1:sql})",
+				documentation: "Perform query",
+			},
+			{
+				label: "prepare",
+				insertText: "prepare(${1:query})",
+				documentation: "Prepare statement",
+			},
+			{
+				label: "close",
+				insertText: "close()",
+				documentation: "Close connection",
+			},
+			{
+				label: "commit",
+				insertText: "commit()",
+				documentation: "Commit transaction",
+			},
+			{
+				label: "rollback",
+				insertText: "rollback()",
+				documentation: "Roll back transaction",
+			},
+			{
+				label: "autocommit",
+				insertText: "autocommit(${1:mode})",
+				documentation: "Set autocommit mode",
+			},
+		);
+	}
+
+	// Generic object methods that most PHP objects have
+	if (variableType === "object" || variableType.includes("object")) {
+		methods.push(
+			{
+				label: "__toString",
+				insertText: "__toString()",
+				documentation: "String representation of object",
+			},
+			{
+				label: "__get",
+				insertText: "__get(${1:name})",
+				documentation: "Get property value",
+			},
+			{
+				label: "__set",
+				insertText: "__set(${1:name}, ${2:value})",
+				documentation: "Set property value",
+			},
+			{
+				label: "__isset",
+				insertText: "__isset(${1:name})",
+				documentation: "Check if property is set",
+			},
+			{
+				label: "__unset",
+				insertText: "__unset(${1:name})",
+				documentation: "Unset property",
+			},
+		);
+	}
+
+	return methods;
+}
+
 monaco.languages.registerCompletionItemProvider("php", {
 	provideCompletionItems: (model, position) => {
 		const word = model.getWordUntilPosition(position);
@@ -186,6 +398,49 @@ monaco.languages.registerCompletionItemProvider("php", {
 			startColumn: word.startColumn,
 			endColumn: word.endColumn,
 		};
+
+		// Get the line up to current position to check for arrow notation
+		const linePrefix = model.getValueInRange({
+			startLineNumber: position.lineNumber,
+			startColumn: 1,
+			endLineNumber: position.lineNumber,
+			endColumn: position.column,
+		});
+
+		// Check if we're after arrow (method call) - PHP uses ->
+		const arrowMatch = linePrefix.match(/(\$\w+)->(\w*)$/);
+		if (arrowMatch) {
+			const variableName = arrowMatch[1];
+			const partialMethod = arrowMatch[2];
+
+			// Extract variables from the current code
+			const code = model.getValue();
+			const extractedVariables = extractPHPVariables(code);
+
+			// Find the variable type
+			const variable = extractedVariables.find((v) => v.name === variableName);
+			if (variable) {
+				const methods = getPHPMethods(variable.type);
+				const methodSuggestions = methods
+					.filter((method) => method.label.startsWith(partialMethod))
+					.map((method) => ({
+						label: method.label,
+						kind: monaco.languages.CompletionItemKind.Method,
+						insertText: method.insertText,
+						insertTextRules:
+							monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+						documentation: method.documentation,
+						range: {
+							startLineNumber: position.lineNumber,
+							endLineNumber: position.lineNumber,
+							startColumn: position.column - partialMethod.length,
+							endColumn: position.column,
+						},
+					}));
+
+				return { suggestions: methodSuggestions };
+			}
+		}
 
 		// Extract variables from the current code
 		const code = model.getValue();

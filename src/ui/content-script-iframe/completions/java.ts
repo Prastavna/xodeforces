@@ -311,6 +311,350 @@ function getJavaRelatedFunctions(variableName: string, variableType: string) {
 	return suggestions;
 }
 
+// Helper function to get method suggestions for Java objects
+function getJavaMethods(variableType: string) {
+	const methods: Array<{
+		label: string;
+		insertText: string;
+		documentation: string;
+	}> = [];
+
+	// Normalize type
+	const baseType = variableType.toLowerCase().replace(/.*\./, "");
+
+	// String methods
+	if (baseType === "string") {
+		methods.push(
+			{
+				label: "length",
+				insertText: "length()",
+				documentation: "Returns the length of the string",
+			},
+			{
+				label: "charAt",
+				insertText: "charAt(${1:index})",
+				documentation: "Returns character at specified index",
+			},
+			{
+				label: "substring",
+				insertText: "substring(${1:start}, ${2:end})",
+				documentation: "Returns substring from start to end",
+			},
+			{
+				label: "indexOf",
+				insertText: "indexOf(${1:str})",
+				documentation: "Returns index of first occurrence",
+			},
+			{
+				label: "lastIndexOf",
+				insertText: "lastIndexOf(${1:str})",
+				documentation: "Returns index of last occurrence",
+			},
+			{
+				label: "toUpperCase",
+				insertText: "toUpperCase()",
+				documentation: "Converts to uppercase",
+			},
+			{
+				label: "toLowerCase",
+				insertText: "toLowerCase()",
+				documentation: "Converts to lowercase",
+			},
+			{
+				label: "trim",
+				insertText: "trim()",
+				documentation: "Removes leading and trailing whitespace",
+			},
+			{
+				label: "replace",
+				insertText: "replace(${1:oldChar}, ${2:newChar})",
+				documentation: "Replaces all occurrences",
+			},
+			{
+				label: "split",
+				insertText: "split(${1:regex})",
+				documentation: "Splits string by regex",
+			},
+			{
+				label: "startsWith",
+				insertText: "startsWith(${1:prefix})",
+				documentation: "Tests if string starts with prefix",
+			},
+			{
+				label: "endsWith",
+				insertText: "endsWith(${1:suffix})",
+				documentation: "Tests if string ends with suffix",
+			},
+			{
+				label: "contains",
+				insertText: "contains(${1:sequence})",
+				documentation: "Tests if string contains sequence",
+			},
+			{
+				label: "isEmpty",
+				insertText: "isEmpty()",
+				documentation: "Tests if string is empty",
+			},
+			{
+				label: "equals",
+				insertText: "equals(${1:other})",
+				documentation: "Compares with another string",
+			},
+			{
+				label: "equalsIgnoreCase",
+				insertText: "equalsIgnoreCase(${1:other})",
+				documentation: "Compares ignoring case",
+			},
+		);
+	}
+
+	// ArrayList methods
+	if (baseType === "arraylist" || variableType.includes("ArrayList")) {
+		methods.push(
+			{
+				label: "add",
+				insertText: "add(${1:element})",
+				documentation: "Appends element to end of list",
+			},
+			{
+				label: "get",
+				insertText: "get(${1:index})",
+				documentation: "Returns element at specified index",
+			},
+			{
+				label: "set",
+				insertText: "set(${1:index}, ${2:element})",
+				documentation: "Replaces element at index",
+			},
+			{
+				label: "remove",
+				insertText: "remove(${1:index})",
+				documentation: "Removes element at index",
+			},
+			{
+				label: "size",
+				insertText: "size()",
+				documentation: "Returns number of elements",
+			},
+			{
+				label: "isEmpty",
+				insertText: "isEmpty()",
+				documentation: "Tests if list is empty",
+			},
+			{
+				label: "clear",
+				insertText: "clear()",
+				documentation: "Removes all elements",
+			},
+			{
+				label: "contains",
+				insertText: "contains(${1:element})",
+				documentation: "Tests if list contains element",
+			},
+			{
+				label: "indexOf",
+				insertText: "indexOf(${1:element})",
+				documentation: "Returns index of first occurrence",
+			},
+			{
+				label: "lastIndexOf",
+				insertText: "lastIndexOf(${1:element})",
+				documentation: "Returns index of last occurrence",
+			},
+			{
+				label: "toArray",
+				insertText: "toArray()",
+				documentation: "Returns array containing all elements",
+			},
+			{
+				label: "addAll",
+				insertText: "addAll(${1:collection})",
+				documentation: "Adds all elements from collection",
+			},
+		);
+	}
+
+	// HashMap methods
+	if (baseType === "hashmap" || variableType.includes("HashMap")) {
+		methods.push(
+			{
+				label: "put",
+				insertText: "put(${1:key}, ${2:value})",
+				documentation: "Associates value with key",
+			},
+			{
+				label: "get",
+				insertText: "get(${1:key})",
+				documentation: "Returns value for key",
+			},
+			{
+				label: "remove",
+				insertText: "remove(${1:key})",
+				documentation: "Removes mapping for key",
+			},
+			{
+				label: "containsKey",
+				insertText: "containsKey(${1:key})",
+				documentation: "Tests if map contains key",
+			},
+			{
+				label: "containsValue",
+				insertText: "containsValue(${1:value})",
+				documentation: "Tests if map contains value",
+			},
+			{
+				label: "keySet",
+				insertText: "keySet()",
+				documentation: "Returns set of keys",
+			},
+			{
+				label: "values",
+				insertText: "values()",
+				documentation: "Returns collection of values",
+			},
+			{
+				label: "entrySet",
+				insertText: "entrySet()",
+				documentation: "Returns set of key-value pairs",
+			},
+			{
+				label: "size",
+				insertText: "size()",
+				documentation: "Returns number of mappings",
+			},
+			{
+				label: "isEmpty",
+				insertText: "isEmpty()",
+				documentation: "Tests if map is empty",
+			},
+			{
+				label: "clear",
+				insertText: "clear()",
+				documentation: "Removes all mappings",
+			},
+			{
+				label: "putAll",
+				insertText: "putAll(${1:map})",
+				documentation: "Copies all mappings from another map",
+			},
+		);
+	}
+
+	// HashSet methods
+	if (baseType === "hashset" || variableType.includes("HashSet")) {
+		methods.push(
+			{
+				label: "add",
+				insertText: "add(${1:element})",
+				documentation: "Adds element to set",
+			},
+			{
+				label: "remove",
+				insertText: "remove(${1:element})",
+				documentation: "Removes element from set",
+			},
+			{
+				label: "contains",
+				insertText: "contains(${1:element})",
+				documentation: "Tests if set contains element",
+			},
+			{
+				label: "size",
+				insertText: "size()",
+				documentation: "Returns number of elements",
+			},
+			{
+				label: "isEmpty",
+				insertText: "isEmpty()",
+				documentation: "Tests if set is empty",
+			},
+			{
+				label: "clear",
+				insertText: "clear()",
+				documentation: "Removes all elements",
+			},
+			{
+				label: "toArray",
+				insertText: "toArray()",
+				documentation: "Returns array containing all elements",
+			},
+			{
+				label: "addAll",
+				insertText: "addAll(${1:collection})",
+				documentation: "Adds all elements from collection",
+			},
+			{
+				label: "retainAll",
+				insertText: "retainAll(${1:collection})",
+				documentation: "Retains only elements in collection",
+			},
+			{
+				label: "removeAll",
+				insertText: "removeAll(${1:collection})",
+				documentation: "Removes all elements in collection",
+			},
+		);
+	}
+
+	// Scanner methods
+	if (baseType === "scanner" || variableType.includes("Scanner")) {
+		methods.push(
+			{
+				label: "next",
+				insertText: "next()",
+				documentation: "Reads next token as String",
+			},
+			{
+				label: "nextLine",
+				insertText: "nextLine()",
+				documentation: "Reads next line as String",
+			},
+			{
+				label: "nextInt",
+				insertText: "nextInt()",
+				documentation: "Reads next token as int",
+			},
+			{
+				label: "nextDouble",
+				insertText: "nextDouble()",
+				documentation: "Reads next token as double",
+			},
+			{
+				label: "nextBoolean",
+				insertText: "nextBoolean()",
+				documentation: "Reads next token as boolean",
+			},
+			{
+				label: "hasNext",
+				insertText: "hasNext()",
+				documentation: "Tests if another token is available",
+			},
+			{
+				label: "hasNextInt",
+				insertText: "hasNextInt()",
+				documentation: "Tests if next token is an int",
+			},
+			{
+				label: "hasNextDouble",
+				insertText: "hasNextDouble()",
+				documentation: "Tests if next token is a double",
+			},
+			{
+				label: "hasNextLine",
+				insertText: "hasNextLine()",
+				documentation: "Tests if another line is available",
+			},
+			{
+				label: "close",
+				insertText: "close()",
+				documentation: "Closes the scanner",
+			},
+		);
+	}
+
+	return methods;
+}
+
 monaco.languages.registerCompletionItemProvider("java", {
 	provideCompletionItems: (model, position) => {
 		const word = model.getWordUntilPosition(position);
@@ -320,6 +664,49 @@ monaco.languages.registerCompletionItemProvider("java", {
 			startColumn: word.startColumn,
 			endColumn: word.endColumn,
 		};
+
+		// Get the line up to current position to check for dot notation
+		const linePrefix = model.getValueInRange({
+			startLineNumber: position.lineNumber,
+			startColumn: 1,
+			endLineNumber: position.lineNumber,
+			endColumn: position.column,
+		});
+
+		// Check if we're after a dot (method call)
+		const dotMatch = linePrefix.match(/(\w+)\.(\w*)$/);
+		if (dotMatch) {
+			const variableName = dotMatch[1];
+			const partialMethod = dotMatch[2];
+
+			// Extract variables from the current code
+			const code = model.getValue();
+			const extractedVariables = extractJavaVariables(code);
+
+			// Find the variable type
+			const variable = extractedVariables.find((v) => v.name === variableName);
+			if (variable) {
+				const methods = getJavaMethods(variable.type);
+				const methodSuggestions = methods
+					.filter((method) => method.label.startsWith(partialMethod))
+					.map((method) => ({
+						label: method.label,
+						kind: monaco.languages.CompletionItemKind.Method,
+						insertText: method.insertText,
+						insertTextRules:
+							monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+						documentation: method.documentation,
+						range: {
+							startLineNumber: position.lineNumber,
+							endLineNumber: position.lineNumber,
+							startColumn: position.column - partialMethod.length,
+							endColumn: position.column,
+						},
+					}));
+
+				return { suggestions: methodSuggestions };
+			}
+		}
 
 		// Extract variables from the current code
 		const code = model.getValue();

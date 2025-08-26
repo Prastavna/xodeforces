@@ -6,7 +6,7 @@
   <p>A powerful browser extension that transforms your competitive programming experience on Codeforces with an integrated Monaco editor, code execution, and smart features.</p>
   
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-  ![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)
+  ![Version](https://img.shields.io/badge/version-1.0.1-blue.svg)
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue.svg)](https://chromewebstore.google.com/detail/xodeforces/lnfgjljnmoickkgbjedecbkcmhhdncpk)
   
   <p>🚀 Available for Chrome • 🦊 Firefox Support</p>

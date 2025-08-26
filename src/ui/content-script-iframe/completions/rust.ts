@@ -163,6 +163,226 @@ function getRustRelatedFunctions(variableName: string, variableType: string) {
 	return suggestions;
 }
 
+// Helper function to get method suggestions for Rust types
+function getRustMethods(variableType: string) {
+	const methods: Array<{
+		label: string;
+		insertText: string;
+		documentation: string;
+	}> = [];
+
+	// String methods
+	if (variableType === "String" || variableType === "&str") {
+		methods.push(
+			{
+				label: "len",
+				insertText: "len()",
+				documentation: "Returns the length of the string",
+			},
+			{
+				label: "is_empty",
+				insertText: "is_empty()",
+				documentation: "Checks if the string is empty",
+			},
+			{
+				label: "push",
+				insertText: "push(${1:ch})",
+				documentation: "Appends a character",
+			},
+			{
+				label: "push_str",
+				insertText: "push_str(${1:string})",
+				documentation: "Appends a string slice",
+			},
+			{
+				label: "pop",
+				insertText: "pop()",
+				documentation: "Removes and returns the last character",
+			},
+			{
+				label: "clear",
+				insertText: "clear()",
+				documentation: "Truncates string, removing all contents",
+			},
+			{
+				label: "split",
+				insertText: "split(${1:pattern})",
+				documentation: "Splits string by pattern",
+			},
+			{
+				label: "chars",
+				insertText: "chars()",
+				documentation: "Returns iterator over characters",
+			},
+			{
+				label: "trim",
+				insertText: "trim()",
+				documentation:
+					"Returns string with leading/trailing whitespace removed",
+			},
+			{
+				label: "to_uppercase",
+				insertText: "to_uppercase()",
+				documentation: "Returns uppercase equivalent",
+			},
+			{
+				label: "to_lowercase",
+				insertText: "to_lowercase()",
+				documentation: "Returns lowercase equivalent",
+			},
+			{
+				label: "contains",
+				insertText: "contains(${1:pattern})",
+				documentation: "Checks if string contains pattern",
+			},
+			{
+				label: "starts_with",
+				insertText: "starts_with(${1:pattern})",
+				documentation: "Checks if string starts with pattern",
+			},
+			{
+				label: "ends_with",
+				insertText: "ends_with(${1:pattern})",
+				documentation: "Checks if string ends with pattern",
+			},
+		);
+	}
+
+	// Vec methods
+	if (variableType.includes("Vec") || variableType === "Vec") {
+		methods.push(
+			{
+				label: "push",
+				insertText: "push(${1:value})",
+				documentation: "Appends element to back of vector",
+			},
+			{
+				label: "pop",
+				insertText: "pop()",
+				documentation: "Removes and returns last element",
+			},
+			{
+				label: "len",
+				insertText: "len()",
+				documentation: "Returns number of elements",
+			},
+			{
+				label: "is_empty",
+				insertText: "is_empty()",
+				documentation: "Checks if vector is empty",
+			},
+			{
+				label: "clear",
+				insertText: "clear()",
+				documentation: "Clears vector, removing all values",
+			},
+			{
+				label: "insert",
+				insertText: "insert(${1:index}, ${2:element})",
+				documentation: "Inserts element at position",
+			},
+			{
+				label: "remove",
+				insertText: "remove(${1:index})",
+				documentation: "Removes and returns element at position",
+			},
+			{
+				label: "get",
+				insertText: "get(${1:index})",
+				documentation: "Returns reference to element or None",
+			},
+			{
+				label: "first",
+				insertText: "first()",
+				documentation: "Returns first element or None",
+			},
+			{
+				label: "last",
+				insertText: "last()",
+				documentation: "Returns last element or None",
+			},
+			{
+				label: "sort",
+				insertText: "sort()",
+				documentation: "Sorts vector in-place",
+			},
+			{
+				label: "reverse",
+				insertText: "reverse()",
+				documentation: "Reverses order of elements",
+			},
+			{
+				label: "contains",
+				insertText: "contains(&${1:x})",
+				documentation: "Checks if vector contains element",
+			},
+			{
+				label: "iter",
+				insertText: "iter()",
+				documentation: "Returns iterator over elements",
+			},
+		);
+	}
+
+	// HashMap methods
+	if (variableType.includes("HashMap") || variableType === "HashMap") {
+		methods.push(
+			{
+				label: "insert",
+				insertText: "insert(${1:key}, ${2:value})",
+				documentation: "Inserts key-value pair",
+			},
+			{
+				label: "get",
+				insertText: "get(&${1:key})",
+				documentation: "Returns reference to value or None",
+			},
+			{
+				label: "remove",
+				insertText: "remove(&${1:key})",
+				documentation: "Removes key-value pair",
+			},
+			{
+				label: "contains_key",
+				insertText: "contains_key(&${1:key})",
+				documentation: "Checks if map contains key",
+			},
+			{
+				label: "len",
+				insertText: "len()",
+				documentation: "Returns number of elements",
+			},
+			{
+				label: "is_empty",
+				insertText: "is_empty()",
+				documentation: "Checks if map is empty",
+			},
+			{
+				label: "clear",
+				insertText: "clear()",
+				documentation: "Clears map, removing all key-value pairs",
+			},
+			{
+				label: "keys",
+				insertText: "keys()",
+				documentation: "Returns iterator over keys",
+			},
+			{
+				label: "values",
+				insertText: "values()",
+				documentation: "Returns iterator over values",
+			},
+			{
+				label: "iter",
+				insertText: "iter()",
+				documentation: "Returns iterator over key-value pairs",
+			},
+		);
+	}
+
+	return methods;
+}
+
 monaco.languages.registerCompletionItemProvider("rust", {
 	provideCompletionItems: (model, position) => {
 		const word = model.getWordUntilPosition(position);
@@ -172,6 +392,49 @@ monaco.languages.registerCompletionItemProvider("rust", {
 			startColumn: word.startColumn,
 			endColumn: word.endColumn,
 		};
+
+		// Get the line up to current position to check for dot notation
+		const linePrefix = model.getValueInRange({
+			startLineNumber: position.lineNumber,
+			startColumn: 1,
+			endLineNumber: position.lineNumber,
+			endColumn: position.column,
+		});
+
+		// Check if we're after a dot (method call)
+		const dotMatch = linePrefix.match(/(\w+)\.(\w*)$/);
+		if (dotMatch) {
+			const variableName = dotMatch[1];
+			const partialMethod = dotMatch[2];
+
+			// Extract variables from the current code
+			const code = model.getValue();
+			const extractedVariables = extractRustVariables(code);
+
+			// Find the variable type
+			const variable = extractedVariables.find((v) => v.name === variableName);
+			if (variable) {
+				const methods = getRustMethods(variable.type);
+				const methodSuggestions = methods
+					.filter((method) => method.label.startsWith(partialMethod))
+					.map((method) => ({
+						label: method.label,
+						kind: monaco.languages.CompletionItemKind.Method,
+						insertText: method.insertText,
+						insertTextRules:
+							monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+						documentation: method.documentation,
+						range: {
+							startLineNumber: position.lineNumber,
+							endLineNumber: position.lineNumber,
+							startColumn: position.column - partialMethod.length,
+							endColumn: position.column,
+						},
+					}));
+
+				return { suggestions: methodSuggestions };
+			}
+		}
 
 		// Extract variables from the current code
 		const code = model.getValue();

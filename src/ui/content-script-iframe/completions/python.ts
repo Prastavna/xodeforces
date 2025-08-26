@@ -229,6 +229,291 @@ function getPythonRelatedFunctions(variableName: string, variableType: string) {
 	return suggestions;
 }
 
+// Helper function to get method suggestions for Python objects
+function getPythonMethods(variableType: string) {
+	const methods: Array<{
+		label: string;
+		insertText: string;
+		documentation: string;
+	}> = [];
+
+	// List methods
+	if (variableType === "list" || variableType === "variable") {
+		methods.push(
+			{
+				label: "append",
+				insertText: "append(${1:item})",
+				documentation: "Add item to end of list",
+			},
+			{
+				label: "insert",
+				insertText: "insert(${1:index}, ${2:item})",
+				documentation: "Insert item at index",
+			},
+			{
+				label: "remove",
+				insertText: "remove(${1:item})",
+				documentation: "Remove first occurrence of item",
+			},
+			{
+				label: "pop",
+				insertText: "pop(${1:index})",
+				documentation: "Remove and return item at index",
+			},
+			{
+				label: "index",
+				insertText: "index(${1:item})",
+				documentation: "Return index of first occurrence",
+			},
+			{
+				label: "count",
+				insertText: "count(${1:item})",
+				documentation: "Count occurrences of item",
+			},
+			{
+				label: "sort",
+				insertText: "sort()",
+				documentation: "Sort list in place",
+			},
+			{
+				label: "reverse",
+				insertText: "reverse()",
+				documentation: "Reverse list in place",
+			},
+			{
+				label: "clear",
+				insertText: "clear()",
+				documentation: "Remove all items",
+			},
+			{
+				label: "copy",
+				insertText: "copy()",
+				documentation: "Return shallow copy of list",
+			},
+			{
+				label: "extend",
+				insertText: "extend(${1:iterable})",
+				documentation: "Extend list with items from iterable",
+			},
+		);
+	}
+
+	// String methods
+	if (variableType === "str" || variableType === "variable") {
+		methods.push(
+			{
+				label: "upper",
+				insertText: "upper()",
+				documentation: "Return uppercase version",
+			},
+			{
+				label: "lower",
+				insertText: "lower()",
+				documentation: "Return lowercase version",
+			},
+			{
+				label: "strip",
+				insertText: "strip()",
+				documentation: "Remove leading/trailing whitespace",
+			},
+			{
+				label: "split",
+				insertText: "split(${1:separator})",
+				documentation: "Split string into list",
+			},
+			{
+				label: "join",
+				insertText: "join(${1:iterable})",
+				documentation: "Join iterable elements with string",
+			},
+			{
+				label: "replace",
+				insertText: "replace(${1:old}, ${2:new})",
+				documentation: "Replace occurrences",
+			},
+			{
+				label: "find",
+				insertText: "find(${1:substring})",
+				documentation: "Find substring index",
+			},
+			{
+				label: "startswith",
+				insertText: "startswith(${1:prefix})",
+				documentation: "Check if starts with prefix",
+			},
+			{
+				label: "endswith",
+				insertText: "endswith(${1:suffix})",
+				documentation: "Check if ends with suffix",
+			},
+			{
+				label: "isdigit",
+				insertText: "isdigit()",
+				documentation: "Check if all characters are digits",
+			},
+			{
+				label: "isalpha",
+				insertText: "isalpha()",
+				documentation: "Check if all characters are alphabetic",
+			},
+			{
+				label: "isalnum",
+				insertText: "isalnum()",
+				documentation: "Check if all characters are alphanumeric",
+			},
+			{
+				label: "capitalize",
+				insertText: "capitalize()",
+				documentation: "Capitalize first character",
+			},
+			{
+				label: "title",
+				insertText: "title()",
+				documentation: "Return title case version",
+			},
+			{
+				label: "center",
+				insertText: "center(${1:width})",
+				documentation: "Center string in field of width",
+			},
+			{
+				label: "ljust",
+				insertText: "ljust(${1:width})",
+				documentation: "Left justify in field of width",
+			},
+			{
+				label: "rjust",
+				insertText: "rjust(${1:width})",
+				documentation: "Right justify in field of width",
+			},
+		);
+	}
+
+	// Dictionary methods
+	if (variableType === "dict" || variableType === "variable") {
+		methods.push(
+			{
+				label: "keys",
+				insertText: "keys()",
+				documentation: "Return dictionary keys",
+			},
+			{
+				label: "values",
+				insertText: "values()",
+				documentation: "Return dictionary values",
+			},
+			{
+				label: "items",
+				insertText: "items()",
+				documentation: "Return key-value pairs",
+			},
+			{
+				label: "get",
+				insertText: "get(${1:key}, ${2:default})",
+				documentation: "Get value with default",
+			},
+			{
+				label: "pop",
+				insertText: "pop(${1:key}, ${2:default})",
+				documentation: "Remove and return value",
+			},
+			{
+				label: "popitem",
+				insertText: "popitem()",
+				documentation: "Remove and return arbitrary item",
+			},
+			{
+				label: "clear",
+				insertText: "clear()",
+				documentation: "Remove all items",
+			},
+			{
+				label: "copy",
+				insertText: "copy()",
+				documentation: "Return shallow copy",
+			},
+			{
+				label: "update",
+				insertText: "update(${1:other})",
+				documentation: "Update with key-value pairs",
+			},
+			{
+				label: "setdefault",
+				insertText: "setdefault(${1:key}, ${2:default})",
+				documentation: "Get value or set default",
+			},
+		);
+	}
+
+	// Set methods
+	if (variableType === "set" || variableType === "variable") {
+		methods.push(
+			{
+				label: "add",
+				insertText: "add(${1:item})",
+				documentation: "Add element to set",
+			},
+			{
+				label: "remove",
+				insertText: "remove(${1:item})",
+				documentation: "Remove element (raises KeyError if not found)",
+			},
+			{
+				label: "discard",
+				insertText: "discard(${1:item})",
+				documentation: "Remove element (no error if not found)",
+			},
+			{
+				label: "pop",
+				insertText: "pop()",
+				documentation: "Remove and return arbitrary element",
+			},
+			{
+				label: "clear",
+				insertText: "clear()",
+				documentation: "Remove all elements",
+			},
+			{
+				label: "copy",
+				insertText: "copy()",
+				documentation: "Return shallow copy",
+			},
+			{
+				label: "union",
+				insertText: "union(${1:other})",
+				documentation: "Return union of sets",
+			},
+			{
+				label: "intersection",
+				insertText: "intersection(${1:other})",
+				documentation: "Return intersection of sets",
+			},
+			{
+				label: "difference",
+				insertText: "difference(${1:other})",
+				documentation: "Return difference of sets",
+			},
+			{
+				label: "symmetric_difference",
+				insertText: "symmetric_difference(${1:other})",
+				documentation: "Return symmetric difference",
+			},
+			{
+				label: "issubset",
+				insertText: "issubset(${1:other})",
+				documentation: "Check if subset of other",
+			},
+			{
+				label: "issuperset",
+				insertText: "issuperset(${1:other})",
+				documentation: "Check if superset of other",
+			},
+		);
+	}
+
+	return methods;
+}
+
 monaco.languages.registerCompletionItemProvider("python", {
 	provideCompletionItems: (model, position) => {
 		const word = model.getWordUntilPosition(position);
@@ -238,6 +523,49 @@ monaco.languages.registerCompletionItemProvider("python", {
 			startColumn: word.startColumn,
 			endColumn: word.endColumn,
 		};
+
+		// Get the line up to current position to check for dot notation
+		const linePrefix = model.getValueInRange({
+			startLineNumber: position.lineNumber,
+			startColumn: 1,
+			endLineNumber: position.lineNumber,
+			endColumn: position.column,
+		});
+
+		// Check if we're after a dot (method call)
+		const dotMatch = linePrefix.match(/(\w+)\.(\w*)$/);
+		if (dotMatch) {
+			const variableName = dotMatch[1];
+			const partialMethod = dotMatch[2];
+
+			// Extract variables from the current code
+			const code = model.getValue();
+			const extractedVariables = extractPythonVariables(code);
+
+			// Find the variable type
+			const variable = extractedVariables.find((v) => v.name === variableName);
+			if (variable) {
+				const methods = getPythonMethods(variable.type);
+				const methodSuggestions = methods
+					.filter((method) => method.label.startsWith(partialMethod))
+					.map((method) => ({
+						label: method.label,
+						kind: monaco.languages.CompletionItemKind.Method,
+						insertText: method.insertText,
+						insertTextRules:
+							monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+						documentation: method.documentation,
+						range: {
+							startLineNumber: position.lineNumber,
+							endLineNumber: position.lineNumber,
+							startColumn: position.column - partialMethod.length,
+							endColumn: position.column,
+						},
+					}));
+
+				return { suggestions: methodSuggestions };
+			}
+		}
 
 		// Extract variables from the current code
 		const code = model.getValue();

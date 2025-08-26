@@ -217,6 +217,303 @@ function getCSharpRelatedFunctions(variableName: string, variableType: string) {
 	return suggestions;
 }
 
+// Helper function to get method suggestions for C# objects
+function getCSharpMethods(variableType: string) {
+	const methods: Array<{
+		label: string;
+		insertText: string;
+		documentation: string;
+	}> = [];
+
+	// Normalize type
+	const baseType = variableType
+		.toLowerCase()
+		.replace(/.*\./, "")
+		.replace(/<.*>/, "");
+
+	// String methods
+	if (baseType === "string") {
+		methods.push(
+			{
+				label: "Length",
+				insertText: "Length",
+				documentation: "Gets the number of characters",
+			},
+			{
+				label: "ToUpper",
+				insertText: "ToUpper()",
+				documentation: "Converts to uppercase",
+			},
+			{
+				label: "ToLower",
+				insertText: "ToLower()",
+				documentation: "Converts to lowercase",
+			},
+			{
+				label: "Trim",
+				insertText: "Trim()",
+				documentation: "Removes leading and trailing whitespace",
+			},
+			{
+				label: "Split",
+				insertText: "Split(${1:separator})",
+				documentation: "Splits string by separator",
+			},
+			{
+				label: "Replace",
+				insertText: "Replace(${1:oldValue}, ${2:newValue})",
+				documentation: "Replaces all occurrences",
+			},
+			{
+				label: "Contains",
+				insertText: "Contains(${1:value})",
+				documentation: "Determines if string contains value",
+			},
+			{
+				label: "StartsWith",
+				insertText: "StartsWith(${1:value})",
+				documentation: "Determines if string starts with value",
+			},
+			{
+				label: "EndsWith",
+				insertText: "EndsWith(${1:value})",
+				documentation: "Determines if string ends with value",
+			},
+			{
+				label: "IndexOf",
+				insertText: "IndexOf(${1:value})",
+				documentation: "Returns index of first occurrence",
+			},
+			{
+				label: "LastIndexOf",
+				insertText: "LastIndexOf(${1:value})",
+				documentation: "Returns index of last occurrence",
+			},
+			{
+				label: "Substring",
+				insertText: "Substring(${1:startIndex}, ${2:length})",
+				documentation: "Retrieves substring",
+			},
+			{
+				label: "Insert",
+				insertText: "Insert(${1:startIndex}, ${2:value})",
+				documentation: "Inserts string at index",
+			},
+			{
+				label: "Remove",
+				insertText: "Remove(${1:startIndex}, ${2:count})",
+				documentation: "Removes characters",
+			},
+			{
+				label: "IsNullOrEmpty",
+				insertText: "IsNullOrEmpty()",
+				documentation: "Indicates if string is null or empty",
+			},
+		);
+	}
+
+	// List methods
+	if (baseType === "list" || variableType.includes("List")) {
+		methods.push(
+			{
+				label: "Add",
+				insertText: "Add(${1:item})",
+				documentation: "Adds item to end of list",
+			},
+			{
+				label: "Insert",
+				insertText: "Insert(${1:index}, ${2:item})",
+				documentation: "Inserts item at index",
+			},
+			{
+				label: "Remove",
+				insertText: "Remove(${1:item})",
+				documentation: "Removes first occurrence of item",
+			},
+			{
+				label: "RemoveAt",
+				insertText: "RemoveAt(${1:index})",
+				documentation: "Removes item at index",
+			},
+			{
+				label: "Clear",
+				insertText: "Clear()",
+				documentation: "Removes all items",
+			},
+			{
+				label: "Contains",
+				insertText: "Contains(${1:item})",
+				documentation: "Determines if list contains item",
+			},
+			{
+				label: "IndexOf",
+				insertText: "IndexOf(${1:item})",
+				documentation: "Returns index of first occurrence",
+			},
+			{
+				label: "Count",
+				insertText: "Count",
+				documentation: "Gets number of items",
+			},
+			{
+				label: "Sort",
+				insertText: "Sort()",
+				documentation: "Sorts items in list",
+			},
+			{
+				label: "Reverse",
+				insertText: "Reverse()",
+				documentation: "Reverses order of items",
+			},
+			{
+				label: "ToArray",
+				insertText: "ToArray()",
+				documentation: "Copies items to new array",
+			},
+			{
+				label: "Find",
+				insertText: "Find(${1:predicate})",
+				documentation: "Searches for item matching predicate",
+			},
+			{
+				label: "FindAll",
+				insertText: "FindAll(${1:predicate})",
+				documentation: "Retrieves all items matching predicate",
+			},
+			{
+				label: "ForEach",
+				insertText: "ForEach(${1:action})",
+				documentation: "Performs action on each item",
+			},
+		);
+	}
+
+	// Dictionary methods
+	if (baseType === "dictionary" || variableType.includes("Dictionary")) {
+		methods.push(
+			{
+				label: "Add",
+				insertText: "Add(${1:key}, ${2:value})",
+				documentation: "Adds key-value pair",
+			},
+			{
+				label: "Remove",
+				insertText: "Remove(${1:key})",
+				documentation: "Removes item with specified key",
+			},
+			{
+				label: "ContainsKey",
+				insertText: "ContainsKey(${1:key})",
+				documentation: "Determines if dictionary contains key",
+			},
+			{
+				label: "ContainsValue",
+				insertText: "ContainsValue(${1:value})",
+				documentation: "Determines if dictionary contains value",
+			},
+			{
+				label: "TryGetValue",
+				insertText: "TryGetValue(${1:key}, out ${2:value})",
+				documentation: "Gets value associated with key",
+			},
+			{
+				label: "Clear",
+				insertText: "Clear()",
+				documentation: "Removes all items",
+			},
+			{
+				label: "Count",
+				insertText: "Count",
+				documentation: "Gets number of key-value pairs",
+			},
+			{
+				label: "Keys",
+				insertText: "Keys",
+				documentation: "Gets collection of keys",
+			},
+			{
+				label: "Values",
+				insertText: "Values",
+				documentation: "Gets collection of values",
+			},
+		);
+	}
+
+	// Array methods
+	if (variableType.includes("[]") || baseType === "array") {
+		methods.push(
+			{
+				label: "Length",
+				insertText: "Length",
+				documentation: "Gets number of elements in array",
+			},
+			{
+				label: "GetLength",
+				insertText: "GetLength(${1:dimension})",
+				documentation: "Gets length of specified dimension",
+			},
+			{
+				label: "Clone",
+				insertText: "Clone()",
+				documentation: "Creates shallow copy of array",
+			},
+			{
+				label: "CopyTo",
+				insertText: "CopyTo(${1:array}, ${2:index})",
+				documentation: "Copies elements to another array",
+			},
+		);
+	}
+
+	// StringBuilder methods
+	if (baseType === "stringbuilder") {
+		methods.push(
+			{
+				label: "Append",
+				insertText: "Append(${1:value})",
+				documentation: "Appends string representation of value",
+			},
+			{
+				label: "AppendLine",
+				insertText: "AppendLine(${1:value})",
+				documentation: "Appends value followed by line terminator",
+			},
+			{
+				label: "Insert",
+				insertText: "Insert(${1:index}, ${2:value})",
+				documentation: "Inserts string at specified index",
+			},
+			{
+				label: "Remove",
+				insertText: "Remove(${1:startIndex}, ${2:length})",
+				documentation: "Removes characters from specified position",
+			},
+			{
+				label: "Replace",
+				insertText: "Replace(${1:oldValue}, ${2:newValue})",
+				documentation: "Replaces all occurrences",
+			},
+			{
+				label: "Clear",
+				insertText: "Clear()",
+				documentation: "Removes all characters",
+			},
+			{
+				label: "ToString",
+				insertText: "ToString()",
+				documentation: "Converts to string",
+			},
+			{
+				label: "Length",
+				insertText: "Length",
+				documentation: "Gets or sets length of current StringBuilder",
+			},
+		);
+	}
+
+	return methods;
+}
+
 monaco.languages.registerCompletionItemProvider("csharp", {
 	provideCompletionItems: (model, position) => {
 		const word = model.getWordUntilPosition(position);
@@ -226,6 +523,51 @@ monaco.languages.registerCompletionItemProvider("csharp", {
 			startColumn: word.startColumn,
 			endColumn: word.endColumn,
 		};
+
+		// Get the line up to current position to check for dot notation
+		const linePrefix = model.getValueInRange({
+			startLineNumber: position.lineNumber,
+			startColumn: 1,
+			endLineNumber: position.lineNumber,
+			endColumn: position.column,
+		});
+
+		// Check if we're after a dot (method call)
+		const dotMatch = linePrefix.match(/(\w+)\.(\w*)$/);
+		if (dotMatch) {
+			const variableName = dotMatch[1];
+			const partialMethod = dotMatch[2];
+
+			// Extract variables from the current code
+			const code = model.getValue();
+			const extractedVariables = extractCSharpVariables(code);
+
+			// Find the variable type
+			const variable = extractedVariables.find((v) => v.name === variableName);
+			if (variable) {
+				const methods = getCSharpMethods(variable.type);
+				const methodSuggestions = methods
+					.filter((method) =>
+						method.label.toLowerCase().startsWith(partialMethod.toLowerCase()),
+					)
+					.map((method) => ({
+						label: method.label,
+						kind: monaco.languages.CompletionItemKind.Method,
+						insertText: method.insertText,
+						insertTextRules:
+							monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+						documentation: method.documentation,
+						range: {
+							startLineNumber: position.lineNumber,
+							endLineNumber: position.lineNumber,
+							startColumn: position.column - partialMethod.length,
+							endColumn: position.column,
+						},
+					}));
+
+				return { suggestions: methodSuggestions };
+			}
+		}
 
 		// Extract variables from the current code
 		const code = model.getValue();

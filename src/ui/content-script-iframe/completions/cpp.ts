@@ -18,14 +18,38 @@ function extractCppVariables(code: string) {
 			variables.push({ name, type, line: i + 1 });
 		}
 
-		// Match STL containers
+		// Match STL containers with full type information
 		const containerMatches = line.matchAll(
-			/\b(vector|map|unordered_map|set|unordered_set|queue|stack|priority_queue|deque|list|pair)<[^>]+>\s+(\w+)/g,
+			/\b(std::)?(vector|map|unordered_map|set|unordered_set|queue|stack|priority_queue|deque|list|pair|string)<([^>]+)>\s+(\w+)/g,
 		);
 		for (const match of containerMatches) {
-			const type = match[1] + "<>";
+			const containerType = match[2];
+			const templateType = match[3];
+			const name = match[4];
+			const fullType = `${containerType}<${templateType}>`;
+			variables.push({ name, type: fullType, line: i + 1 });
+		}
+
+		// Match simple STL containers without template parameters shown
+		const simpleContainerMatches = line.matchAll(
+			/\b(std::)?(vector|map|unordered_map|set|unordered_set|queue|stack|priority_queue|deque|list|pair|string)<[^>]+>\s+(\w+)/g,
+		);
+		for (const match of simpleContainerMatches) {
+			const containerType = match[2];
+			const name = match[3];
+			// Skip if already matched by detailed regex above
+			if (!variables.some((v) => v.name === name && v.line === i + 1)) {
+				variables.push({ name, type: containerType + "<>", line: i + 1 });
+			}
+		}
+
+		// Match std::string without template
+		const stringMatches = line.matchAll(
+			/\b(std::)?string\s+(\w+)(?:\s*=\s*[^;,]+)?\s*[;,]/g,
+		);
+		for (const match of stringMatches) {
 			const name = match[2];
-			variables.push({ name, type, line: i + 1 });
+			variables.push({ name, type: "string", line: i + 1 });
 		}
 
 		// Match array declarations
@@ -260,6 +284,407 @@ function getCppRelatedFunctions(variableName: string, variableType: string) {
 	return suggestions;
 }
 
+// Helper function to get method suggestions for STL containers
+function getContainerMethods(containerType: string) {
+	const methods: Array<{
+		label: string;
+		insertText: string;
+		documentation: string;
+	}> = [];
+
+	// Normalize the type (remove template parameters for matching)
+	const baseType = containerType
+		.toLowerCase()
+		.replace(/<.*>/, "")
+		.replace("std::", "");
+
+	// Vector methods
+	if (baseType === "vector" || containerType.includes("vector")) {
+		methods.push(
+			{
+				label: "push_back",
+				insertText: "push_back(${1:value})",
+				documentation: "Add element to end",
+			},
+			{
+				label: "pop_back",
+				insertText: "pop_back()",
+				documentation: "Remove last element",
+			},
+			{
+				label: "size",
+				insertText: "size()",
+				documentation: "Get number of elements",
+			},
+			{
+				label: "empty",
+				insertText: "empty()",
+				documentation: "Check if container is empty",
+			},
+			{
+				label: "clear",
+				insertText: "clear()",
+				documentation: "Remove all elements",
+			},
+			{
+				label: "begin",
+				insertText: "begin()",
+				documentation: "Get iterator to beginning",
+			},
+			{
+				label: "end",
+				insertText: "end()",
+				documentation: "Get iterator to end",
+			},
+			{
+				label: "front",
+				insertText: "front()",
+				documentation: "Get first element",
+			},
+			{
+				label: "back",
+				insertText: "back()",
+				documentation: "Get last element",
+			},
+			{
+				label: "at",
+				insertText: "at(${1:index})",
+				documentation: "Get element at index with bounds checking",
+			},
+			{
+				label: "insert",
+				insertText: "insert(${1:position}, ${2:value})",
+				documentation: "Insert element at position",
+			},
+			{
+				label: "erase",
+				insertText: "erase(${1:position})",
+				documentation: "Remove element at position",
+			},
+			{
+				label: "resize",
+				insertText: "resize(${1:size})",
+				documentation: "Change container size",
+			},
+			{
+				label: "reserve",
+				insertText: "reserve(${1:capacity})",
+				documentation: "Reserve storage capacity",
+			},
+			{
+				label: "capacity",
+				insertText: "capacity()",
+				documentation: "Get storage capacity",
+			},
+		);
+	}
+
+	// Map methods
+	if (
+		baseType === "map" ||
+		baseType === "unordered_map" ||
+		containerType.includes("map")
+	) {
+		methods.push(
+			{
+				label: "insert",
+				insertText: "insert({${1:key}, ${2:value}})",
+				documentation: "Insert key-value pair",
+			},
+			{
+				label: "find",
+				insertText: "find(${1:key})",
+				documentation: "Find element with key",
+			},
+			{
+				label: "erase",
+				insertText: "erase(${1:key})",
+				documentation: "Remove element with key",
+			},
+			{
+				label: "size",
+				insertText: "size()",
+				documentation: "Get number of elements",
+			},
+			{
+				label: "empty",
+				insertText: "empty()",
+				documentation: "Check if container is empty",
+			},
+			{
+				label: "clear",
+				insertText: "clear()",
+				documentation: "Remove all elements",
+			},
+			{
+				label: "begin",
+				insertText: "begin()",
+				documentation: "Get iterator to beginning",
+			},
+			{
+				label: "end",
+				insertText: "end()",
+				documentation: "Get iterator to end",
+			},
+			{
+				label: "count",
+				insertText: "count(${1:key})",
+				documentation: "Count elements with key",
+			},
+			{
+				label: "lower_bound",
+				insertText: "lower_bound(${1:key})",
+				documentation: "Get iterator to first element not less than key",
+			},
+			{
+				label: "upper_bound",
+				insertText: "upper_bound(${1:key})",
+				documentation: "Get iterator to first element greater than key",
+			},
+		);
+	}
+
+	// Set methods
+	if (
+		baseType === "set" ||
+		baseType === "unordered_set" ||
+		containerType.includes("set")
+	) {
+		methods.push(
+			{
+				label: "insert",
+				insertText: "insert(${1:value})",
+				documentation: "Insert element",
+			},
+			{
+				label: "find",
+				insertText: "find(${1:value})",
+				documentation: "Find element",
+			},
+			{
+				label: "erase",
+				insertText: "erase(${1:value})",
+				documentation: "Remove element",
+			},
+			{
+				label: "size",
+				insertText: "size()",
+				documentation: "Get number of elements",
+			},
+			{
+				label: "empty",
+				insertText: "empty()",
+				documentation: "Check if container is empty",
+			},
+			{
+				label: "clear",
+				insertText: "clear()",
+				documentation: "Remove all elements",
+			},
+			{
+				label: "begin",
+				insertText: "begin()",
+				documentation: "Get iterator to beginning",
+			},
+			{
+				label: "end",
+				insertText: "end()",
+				documentation: "Get iterator to end",
+			},
+			{
+				label: "count",
+				insertText: "count(${1:value})",
+				documentation: "Count occurrences of value",
+			},
+			{
+				label: "lower_bound",
+				insertText: "lower_bound(${1:value})",
+				documentation: "Get iterator to first element not less than value",
+			},
+			{
+				label: "upper_bound",
+				insertText: "upper_bound(${1:value})",
+				documentation: "Get iterator to first element greater than value",
+			},
+		);
+	}
+
+	// Queue methods
+	if (
+		baseType === "queue" ||
+		(containerType.includes("queue") && !containerType.includes("priority"))
+	) {
+		methods.push(
+			{
+				label: "push",
+				insertText: "push(${1:value})",
+				documentation: "Add element to back",
+			},
+			{
+				label: "pop",
+				insertText: "pop()",
+				documentation: "Remove front element",
+			},
+			{
+				label: "front",
+				insertText: "front()",
+				documentation: "Get front element",
+			},
+			{
+				label: "back",
+				insertText: "back()",
+				documentation: "Get back element",
+			},
+			{
+				label: "size",
+				insertText: "size()",
+				documentation: "Get number of elements",
+			},
+			{
+				label: "empty",
+				insertText: "empty()",
+				documentation: "Check if container is empty",
+			},
+		);
+	}
+
+	// Priority Queue methods
+	if (
+		baseType === "priority_queue" ||
+		containerType.includes("priority_queue")
+	) {
+		methods.push(
+			{
+				label: "push",
+				insertText: "push(${1:value})",
+				documentation: "Add element",
+			},
+			{
+				label: "pop",
+				insertText: "pop()",
+				documentation: "Remove top element",
+			},
+			{ label: "top", insertText: "top()", documentation: "Get top element" },
+			{
+				label: "size",
+				insertText: "size()",
+				documentation: "Get number of elements",
+			},
+			{
+				label: "empty",
+				insertText: "empty()",
+				documentation: "Check if container is empty",
+			},
+		);
+	}
+
+	// Stack methods
+	if (baseType === "stack" || containerType.includes("stack")) {
+		methods.push(
+			{
+				label: "push",
+				insertText: "push(${1:value})",
+				documentation: "Add element to top",
+			},
+			{
+				label: "pop",
+				insertText: "pop()",
+				documentation: "Remove top element",
+			},
+			{ label: "top", insertText: "top()", documentation: "Get top element" },
+			{
+				label: "size",
+				insertText: "size()",
+				documentation: "Get number of elements",
+			},
+			{
+				label: "empty",
+				insertText: "empty()",
+				documentation: "Check if container is empty",
+			},
+		);
+	}
+
+	// String methods
+	if (baseType === "string" || containerType.includes("string")) {
+		methods.push(
+			{
+				label: "length",
+				insertText: "length()",
+				documentation: "Get string length",
+			},
+			{ label: "size", insertText: "size()", documentation: "Get string size" },
+			{
+				label: "empty",
+				insertText: "empty()",
+				documentation: "Check if string is empty",
+			},
+			{
+				label: "clear",
+				insertText: "clear()",
+				documentation: "Clear string content",
+			},
+			{
+				label: "substr",
+				insertText: "substr(${1:pos}, ${2:len})",
+				documentation: "Get substring",
+			},
+			{
+				label: "find",
+				insertText: "find(${1:str})",
+				documentation: "Find substring",
+			},
+			{
+				label: "replace",
+				insertText: "replace(${1:pos}, ${2:len}, ${3:str})",
+				documentation: "Replace part of string",
+			},
+			{
+				label: "insert",
+				insertText: "insert(${1:pos}, ${2:str})",
+				documentation: "Insert into string",
+			},
+			{
+				label: "erase",
+				insertText: "erase(${1:pos}, ${2:len})",
+				documentation: "Erase part of string",
+			},
+			{
+				label: "push_back",
+				insertText: "push_back(${1:char})",
+				documentation: "Add character to end",
+			},
+			{
+				label: "pop_back",
+				insertText: "pop_back()",
+				documentation: "Remove last character",
+			},
+			{
+				label: "front",
+				insertText: "front()",
+				documentation: "Get first character",
+			},
+			{
+				label: "back",
+				insertText: "back()",
+				documentation: "Get last character",
+			},
+			{
+				label: "begin",
+				insertText: "begin()",
+				documentation: "Get iterator to beginning",
+			},
+			{
+				label: "end",
+				insertText: "end()",
+				documentation: "Get iterator to end",
+			},
+		);
+	}
+
+	return methods;
+}
+
 monaco.languages.registerCompletionItemProvider("cpp", {
 	provideCompletionItems: (model, position) => {
 		const word = model.getWordUntilPosition(position);
@@ -269,6 +694,49 @@ monaco.languages.registerCompletionItemProvider("cpp", {
 			startColumn: word.startColumn,
 			endColumn: word.endColumn,
 		};
+
+		// Get the line up to current position to check for dot notation
+		const linePrefix = model.getValueInRange({
+			startLineNumber: position.lineNumber,
+			startColumn: 1,
+			endLineNumber: position.lineNumber,
+			endColumn: position.column,
+		});
+
+		// Check if we're after a dot (method call)
+		const dotMatch = linePrefix.match(/(\w+)\.(\w*)$/);
+		if (dotMatch) {
+			const variableName = dotMatch[1];
+			const partialMethod = dotMatch[2];
+
+			// Extract variables from the current code
+			const code = model.getValue();
+			const extractedVariables = extractCppVariables(code);
+
+			// Find the variable type
+			const variable = extractedVariables.find((v) => v.name === variableName);
+			if (variable) {
+				const methods = getContainerMethods(variable.type);
+				const methodSuggestions = methods
+					.filter((method) => method.label.startsWith(partialMethod))
+					.map((method) => ({
+						label: method.label,
+						kind: monaco.languages.CompletionItemKind.Method,
+						insertText: method.insertText,
+						insertTextRules:
+							monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+						documentation: method.documentation,
+						range: {
+							startLineNumber: position.lineNumber,
+							endLineNumber: position.lineNumber,
+							startColumn: position.column - partialMethod.length,
+							endColumn: position.column,
+						},
+					}));
+
+				return { suggestions: methodSuggestions };
+			}
+		}
 
 		// Extract variables from the current code
 		const code = model.getValue();

@@ -81,8 +81,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
 import { useToast } from "@nuxt/ui/composables/useToast";
+import { computed, onMounted, ref, watch } from "vue";
 import { languages } from "../../../../constants/languages";
 import { useEditorConfig } from "../../../../stores/editor-config";
 import { useSnippetStore } from "../../../../stores/snippet-store";
