@@ -65,6 +65,11 @@
 4. **Write & Test**: Code in the editor, test with custom inputs
 5. **Submit**: Copy your solution or submit directly through Codeforces
 
+## 🔐 How to setup Judge0 Key
+1. Start a free plan of [Judge0 Api](https://rapidapi.com/judge0-official/api/judge0-ce/playground/apiendpoint_489fe32c-7191-4db3-b337-77d0d3932807)
+2. Get the api key from the playground. And add it to the Judge0 settings.
+3. Test Connection to make sure you have setup the key properly.
+
 ## 🛠️ Development
 
 ### Prerequisites
