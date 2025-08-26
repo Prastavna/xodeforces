@@ -1,5 +1,265 @@
 import * as monaco from "monaco-editor";
 
+// Helper function to extract variables from C++ code
+function extractCppVariables(code: string) {
+	const variables: Array<{ name: string; type: string; line: number }> = [];
+	const lines = code.split("\n");
+
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i].trim();
+
+		// Match basic variable declarations
+		const varMatches = line.matchAll(
+			/\b(int|float|double|char|long|short|unsigned\s+int|signed\s+int|bool|string|auto)\s+(\w+)(?:\s*=\s*[^;,]+)?\s*[;,]/g,
+		);
+		for (const match of varMatches) {
+			const type = match[1];
+			const name = match[2];
+			variables.push({ name, type, line: i + 1 });
+		}
+
+		// Match STL containers
+		const containerMatches = line.matchAll(
+			/\b(vector|map|unordered_map|set|unordered_set|queue|stack|priority_queue|deque|list|pair)<[^>]+>\s+(\w+)/g,
+		);
+		for (const match of containerMatches) {
+			const type = match[1] + "<>";
+			const name = match[2];
+			variables.push({ name, type, line: i + 1 });
+		}
+
+		// Match array declarations
+		const arrayMatches = line.matchAll(
+			/\b(int|float|double|char|long|short|unsigned\s+int|signed\s+int|bool|string)\s+(\w+)\s*\[/g,
+		);
+		for (const match of arrayMatches) {
+			const type = match[1] + "[]";
+			const name = match[2];
+			variables.push({ name, type, line: i + 1 });
+		}
+
+		// Match function declarations
+		const funcMatches = line.matchAll(
+			/\b(int|float|double|char|void|long|short|unsigned\s+int|signed\s+int|bool|string|auto)\s+(\w+)\s*\(/g,
+		);
+		for (const match of funcMatches) {
+			const returnType = match[1];
+			const name = match[2];
+			if (
+				name !== "main" &&
+				name !== "if" &&
+				name !== "while" &&
+				name !== "for" &&
+				name !== "switch"
+			) {
+				variables.push({ name, type: `${returnType} function`, line: i + 1 });
+			}
+		}
+	}
+
+	return variables;
+}
+
+// Helper function to suggest related functions for C++ variable types
+function getCppRelatedFunctions(variableName: string, variableType: string) {
+	const suggestions = [];
+
+	// Numeric types
+	if (
+		variableType.includes("int") ||
+		variableType.includes("long") ||
+		variableType.includes("short")
+	) {
+		suggestions.push(
+			{
+				label: `cout ${variableName}`,
+				insertText: `cout << ${variableName} << endl;`,
+				documentation: `Output ${variableName} (${variableType})`,
+			},
+			{
+				label: `cin ${variableName}`,
+				insertText: `cin >> ${variableName};`,
+				documentation: `Input ${variableName} (${variableType})`,
+			},
+		);
+	}
+
+	if (variableType.includes("float") || variableType.includes("double")) {
+		suggestions.push(
+			{
+				label: `cout ${variableName}`,
+				insertText: `cout << ${variableName} << endl;`,
+				documentation: `Output ${variableName} (${variableType})`,
+			},
+			{
+				label: `cin ${variableName}`,
+				insertText: `cin >> ${variableName};`,
+				documentation: `Input ${variableName} (${variableType})`,
+			},
+		);
+	}
+
+	// String types
+	if (variableType.includes("string")) {
+		suggestions.push(
+			{
+				label: `cout ${variableName}`,
+				insertText: `cout << ${variableName} << endl;`,
+				documentation: `Output ${variableName} (${variableType})`,
+			},
+			{
+				label: `cin ${variableName}`,
+				insertText: `cin >> ${variableName};`,
+				documentation: `Input ${variableName} (${variableType})`,
+			},
+			{
+				label: `${variableName}.length()`,
+				insertText: `${variableName}.length()`,
+				documentation: `Get length of ${variableName}`,
+			},
+			{
+				label: `${variableName}.size()`,
+				insertText: `${variableName}.size()`,
+				documentation: `Get size of ${variableName}`,
+			},
+		);
+	}
+
+	// Vector operations
+	if (variableType.includes("vector")) {
+		suggestions.push(
+			{
+				label: `${variableName}.push_back()`,
+				insertText: `${variableName}.push_back(\${1:value});`,
+				documentation: `Add element to ${variableName}`,
+			},
+			{
+				label: `${variableName}.pop_back()`,
+				insertText: `${variableName}.pop_back();`,
+				documentation: `Remove last element from ${variableName}`,
+			},
+			{
+				label: `${variableName}.size()`,
+				insertText: `${variableName}.size()`,
+				documentation: `Get size of ${variableName}`,
+			},
+			{
+				label: `sort ${variableName}`,
+				insertText: `sort(${variableName}.begin(), ${variableName}.end());`,
+				documentation: `Sort ${variableName}`,
+			},
+		);
+	}
+
+	// Map operations
+	if (variableType.includes("map")) {
+		suggestions.push(
+			{
+				label: `${variableName}[key]`,
+				insertText: `${variableName}[\${1:key}]`,
+				documentation: `Access element in ${variableName}`,
+			},
+			{
+				label: `${variableName}.insert()`,
+				insertText: `${variableName}.insert({\${1:key}, \${2:value}});`,
+				documentation: `Insert element into ${variableName}`,
+			},
+			{
+				label: `${variableName}.find()`,
+				insertText: `${variableName}.find(\${1:key})`,
+				documentation: `Find element in ${variableName}`,
+			},
+		);
+	}
+
+	// Set operations
+	if (variableType.includes("set")) {
+		suggestions.push(
+			{
+				label: `${variableName}.insert()`,
+				insertText: `${variableName}.insert(\${1:value});`,
+				documentation: `Insert element into ${variableName}`,
+			},
+			{
+				label: `${variableName}.find()`,
+				insertText: `${variableName}.find(\${1:value})`,
+				documentation: `Find element in ${variableName}`,
+			},
+			{
+				label: `${variableName}.erase()`,
+				insertText: `${variableName}.erase(\${1:value});`,
+				documentation: `Remove element from ${variableName}`,
+			},
+		);
+	}
+
+	// Stack operations
+	if (variableType.includes("stack")) {
+		suggestions.push(
+			{
+				label: `${variableName}.push()`,
+				insertText: `${variableName}.push(\${1:value});`,
+				documentation: `Push element to ${variableName}`,
+			},
+			{
+				label: `${variableName}.pop()`,
+				insertText: `${variableName}.pop();`,
+				documentation: `Pop element from ${variableName}`,
+			},
+			{
+				label: `${variableName}.top()`,
+				insertText: `${variableName}.top()`,
+				documentation: `Get top element of ${variableName}`,
+			},
+		);
+	}
+
+	// Queue operations
+	if (variableType.includes("queue")) {
+		suggestions.push(
+			{
+				label: `${variableName}.push()`,
+				insertText: `${variableName}.push(\${1:value});`,
+				documentation: `Push element to ${variableName}`,
+			},
+			{
+				label: `${variableName}.pop()`,
+				insertText: `${variableName}.pop();`,
+				documentation: `Pop element from ${variableName}`,
+			},
+			{
+				label: `${variableName}.front()`,
+				insertText: `${variableName}.front()`,
+				documentation: `Get front element of ${variableName}`,
+			},
+		);
+	}
+
+	// Common operations for numeric types
+	if (
+		variableType.includes("int") ||
+		variableType.includes("long") ||
+		variableType.includes("short") ||
+		variableType.includes("float") ||
+		variableType.includes("double")
+	) {
+		suggestions.push(
+			{
+				label: `${variableName}++`,
+				insertText: `${variableName}++`,
+				documentation: `Increment ${variableName}`,
+			},
+			{
+				label: `${variableName}--`,
+				insertText: `${variableName}--`,
+				documentation: `Decrement ${variableName}`,
+			},
+		);
+	}
+
+	return suggestions;
+}
+
 monaco.languages.registerCompletionItemProvider("cpp", {
 	provideCompletionItems: (model, position) => {
 		const word = model.getWordUntilPosition(position);
@@ -10,7 +270,46 @@ monaco.languages.registerCompletionItemProvider("cpp", {
 			endColumn: word.endColumn,
 		};
 
+		// Extract variables from the current code
+		const code = model.getValue();
+		const extractedVariables = extractCppVariables(code);
+
+		// Create suggestions for extracted variables
+		const variableSuggestions = extractedVariables.map((variable) => ({
+			label: variable.name,
+			kind: variable.type.includes("function")
+				? monaco.languages.CompletionItemKind.Function
+				: monaco.languages.CompletionItemKind.Variable,
+			insertText: variable.name,
+			insertTextRules:
+				monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+			documentation: `${variable.type} (declared at line ${variable.line})`,
+			range: range,
+		}));
+
+		// Create suggestions for variable-related functions
+		const functionSuggestions: any[] = [];
+		extractedVariables.forEach((variable) => {
+			const relatedFunctions = getCppRelatedFunctions(
+				variable.name,
+				variable.type,
+			);
+			relatedFunctions.forEach((func) => {
+				functionSuggestions.push({
+					label: func.label,
+					kind: monaco.languages.CompletionItemKind.Snippet,
+					insertText: func.insertText,
+					insertTextRules:
+						monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+					documentation: func.documentation,
+					range: range,
+				});
+			});
+		});
+
 		const suggestions = [
+			...variableSuggestions,
+			...functionSuggestions,
 			{
 				label: "#include <iostream>",
 				kind: monaco.languages.CompletionItemKind.Snippet,

@@ -1,5 +1,138 @@
 import * as monaco from "monaco-editor";
 
+// Helper function to extract variables from C code
+function extractCVariables(code: string) {
+	const variables: Array<{ name: string; type: string; line: number }> = [];
+	const lines = code.split("\n");
+
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i].trim();
+
+		// Match variable declarations (basic types)
+		const varMatches = line.matchAll(
+			/\b(int|float|double|char|long|short|unsigned\s+int|signed\s+int|bool)\s+(\w+)(?:\s*=\s*[^;,]+)?\s*[;,]/g,
+		);
+		for (const match of varMatches) {
+			const type = match[1];
+			const name = match[2];
+			variables.push({ name, type, line: i + 1 });
+		}
+
+		// Match array declarations
+		const arrayMatches = line.matchAll(
+			/\b(int|float|double|char|long|short|unsigned\s+int|signed\s+int|bool)\s+(\w+)\s*\[/g,
+		);
+		for (const match of arrayMatches) {
+			const type = match[1] + "[]";
+			const name = match[2];
+			variables.push({ name, type, line: i + 1 });
+		}
+
+		// Match function declarations
+		const funcMatches = line.matchAll(
+			/\b(int|float|double|char|void|long|short|unsigned\s+int|signed\s+int|bool)\s+(\w+)\s*\(/g,
+		);
+		for (const match of funcMatches) {
+			const returnType = match[1];
+			const name = match[2];
+			if (
+				name !== "main" &&
+				name !== "if" &&
+				name !== "while" &&
+				name !== "for" &&
+				name !== "switch"
+			) {
+				variables.push({ name, type: `${returnType} function`, line: i + 1 });
+			}
+		}
+	}
+
+	return variables;
+}
+
+// Helper function to suggest related functions for variable types
+function getRelatedFunctions(variableName: string, variableType: string) {
+	const suggestions = [];
+
+	if (
+		variableType.includes("int") ||
+		variableType.includes("long") ||
+		variableType.includes("short")
+	) {
+		suggestions.push(
+			{
+				label: `printf ${variableName}`,
+				insertText: `printf("%d\\n", ${variableName});`,
+				documentation: `Print ${variableName} (${variableType})`,
+			},
+			{
+				label: `scanf ${variableName}`,
+				insertText: `scanf("%d", &${variableName});`,
+				documentation: `Read value into ${variableName} (${variableType})`,
+			},
+		);
+	}
+
+	if (variableType.includes("float") || variableType.includes("double")) {
+		suggestions.push(
+			{
+				label: `printf ${variableName}`,
+				insertText: `printf("%.2f\\n", ${variableName});`,
+				documentation: `Print ${variableName} (${variableType})`,
+			},
+			{
+				label: `scanf ${variableName}`,
+				insertText: `scanf("%f", &${variableName});`,
+				documentation: `Read value into ${variableName} (${variableType})`,
+			},
+		);
+	}
+
+	if (variableType.includes("char") && variableType.includes("[]")) {
+		suggestions.push(
+			{
+				label: `printf ${variableName}`,
+				insertText: `printf("%s\\n", ${variableName});`,
+				documentation: `Print ${variableName} (${variableType})`,
+			},
+			{
+				label: `scanf ${variableName}`,
+				insertText: `scanf("%s", ${variableName});`,
+				documentation: `Read string into ${variableName} (${variableType})`,
+			},
+			{
+				label: `strlen ${variableName}`,
+				insertText: `strlen(${variableName})`,
+				documentation: `Get length of ${variableName} (${variableType})`,
+			},
+		);
+	}
+
+	// Add increment/decrement for numeric types
+	if (
+		variableType.includes("int") ||
+		variableType.includes("long") ||
+		variableType.includes("short") ||
+		variableType.includes("float") ||
+		variableType.includes("double")
+	) {
+		suggestions.push(
+			{
+				label: `${variableName}++`,
+				insertText: `${variableName}++`,
+				documentation: `Increment ${variableName}`,
+			},
+			{
+				label: `${variableName}--`,
+				insertText: `${variableName}--`,
+				documentation: `Decrement ${variableName}`,
+			},
+		);
+	}
+
+	return suggestions;
+}
+
 monaco.languages.registerCompletionItemProvider("c", {
 	provideCompletionItems: (model, position) => {
 		const word = model.getWordUntilPosition(position);
@@ -10,7 +143,46 @@ monaco.languages.registerCompletionItemProvider("c", {
 			endColumn: word.endColumn,
 		};
 
+		// Extract variables from the current code
+		const code = model.getValue();
+		const extractedVariables = extractCVariables(code);
+
+		// Create suggestions for extracted variables
+		const variableSuggestions = extractedVariables.map((variable) => ({
+			label: variable.name,
+			kind: variable.type.includes("function")
+				? monaco.languages.CompletionItemKind.Function
+				: monaco.languages.CompletionItemKind.Variable,
+			insertText: variable.name,
+			insertTextRules:
+				monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+			documentation: `${variable.type} (declared at line ${variable.line})`,
+			range: range,
+		}));
+
+		// Create suggestions for variable-related functions
+		const functionSuggestions: any[] = [];
+		extractedVariables.forEach((variable) => {
+			const relatedFunctions = getRelatedFunctions(
+				variable.name,
+				variable.type,
+			);
+			relatedFunctions.forEach((func) => {
+				functionSuggestions.push({
+					label: func.label,
+					kind: monaco.languages.CompletionItemKind.Snippet,
+					insertText: func.insertText,
+					insertTextRules:
+						monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+					documentation: func.documentation,
+					range: range,
+				});
+			});
+		});
+
 		const suggestions = [
+			...variableSuggestions,
+			...functionSuggestions,
 			{
 				label: "#include <stdio.h>",
 				kind: monaco.languages.CompletionItemKind.Snippet,

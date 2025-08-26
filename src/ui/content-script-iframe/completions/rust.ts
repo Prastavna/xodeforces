@@ -1,5 +1,168 @@
 import * as monaco from "monaco-editor";
 
+// Helper function to extract variables from Rust code
+function extractRustVariables(code: string) {
+	const variables: Array<{ name: string; type: string; line: number }> = [];
+	const lines = code.split("\n");
+
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i].trim();
+
+		// Match let bindings
+		const letMatches = line.matchAll(
+			/let\s+(mut\s+)?(\w+):\s*(i32|i64|f32|f64|String|str|bool|Vec<[^>]+>|HashMap<[^>]+>|&str)\s*=/g,
+		);
+		for (const match of letMatches) {
+			const name = match[2];
+			const type = match[3];
+			variables.push({ name, type, line: i + 1 });
+		}
+
+		// Match let bindings with type inference
+		const inferMatches = line.matchAll(/let\s+(mut\s+)?(\w+)\s*=\s*(.+);/g);
+		for (const match of inferMatches) {
+			const name = match[2];
+			const value = match[3].trim();
+			let type = "variable";
+
+			if (value.match(/^\d+$/)) type = "i32";
+			else if (value.match(/^\d+i64$/)) type = "i64";
+			else if (value.match(/^\d*\.\d+$/)) type = "f64";
+			else if (value.match(/^"[^"]*"$/)) type = "String";
+			else if (value.match(/^vec!/)) type = "Vec";
+			else if (value.match(/^HashMap::new/)) type = "HashMap";
+
+			variables.push({ name, type, line: i + 1 });
+		}
+
+		// Match function definitions
+		const fnMatches = line.matchAll(/fn\s+(\w+)\s*\(/g);
+		for (const match of fnMatches) {
+			const name = match[1];
+			if (name !== "main") {
+				variables.push({ name, type: "function", line: i + 1 });
+			}
+		}
+
+		// Match struct definitions
+		const structMatches = line.matchAll(/struct\s+(\w+)/g);
+		for (const match of structMatches) {
+			const name = match[1];
+			variables.push({ name, type: "struct", line: i + 1 });
+		}
+	}
+
+	return variables;
+}
+
+// Helper function to suggest related functions for Rust variable types
+function getRustRelatedFunctions(variableName: string, variableType: string) {
+	const suggestions = [];
+
+	// println! for all variables
+	suggestions.push({
+		label: `println!("{}", ${variableName})`,
+		insertText: `println!("{}", ${variableName});`,
+		documentation: `Print ${variableName} (${variableType})`,
+	});
+
+	// String operations
+	if (variableType === "String" || variableType === "&str") {
+		suggestions.push(
+			{
+				label: `${variableName}.len()`,
+				insertText: `${variableName}.len()`,
+				documentation: `Get length of ${variableName}`,
+			},
+			{
+				label: `${variableName}.to_uppercase()`,
+				insertText: `${variableName}.to_uppercase()`,
+				documentation: `Convert ${variableName} to uppercase`,
+			},
+			{
+				label: `${variableName}.to_lowercase()`,
+				insertText: `${variableName}.to_lowercase()`,
+				documentation: `Convert ${variableName} to lowercase`,
+			},
+			{
+				label: `${variableName}.split()`,
+				insertText: `${variableName}.split("\${1:pattern}")`,
+				documentation: `Split ${variableName}`,
+			},
+		);
+	}
+
+	// Vec operations
+	if (variableType.includes("Vec") || variableType === "Vec") {
+		suggestions.push(
+			{
+				label: `${variableName}.push()`,
+				insertText: `${variableName}.push(\${1:value});`,
+				documentation: `Push to ${variableName}`,
+			},
+			{
+				label: `${variableName}.pop()`,
+				insertText: `${variableName}.pop()`,
+				documentation: `Pop from ${variableName}`,
+			},
+			{
+				label: `${variableName}.len()`,
+				insertText: `${variableName}.len()`,
+				documentation: `Get length of ${variableName}`,
+			},
+			{
+				label: `${variableName}.sort()`,
+				insertText: `${variableName}.sort();`,
+				documentation: `Sort ${variableName}`,
+			},
+		);
+	}
+
+	// HashMap operations
+	if (variableType.includes("HashMap") || variableType === "HashMap") {
+		suggestions.push(
+			{
+				label: `${variableName}.insert()`,
+				insertText: `${variableName}.insert(\${1:key}, \${2:value});`,
+				documentation: `Insert into ${variableName}`,
+			},
+			{
+				label: `${variableName}.get()`,
+				insertText: `${variableName}.get(&\${1:key})`,
+				documentation: `Get from ${variableName}`,
+			},
+			{
+				label: `${variableName}.remove()`,
+				insertText: `${variableName}.remove(&\${1:key})`,
+				documentation: `Remove from ${variableName}`,
+			},
+		);
+	}
+
+	// Numeric operations
+	if (
+		variableType === "i32" ||
+		variableType === "i64" ||
+		variableType === "f32" ||
+		variableType === "f64"
+	) {
+		suggestions.push(
+			{
+				label: `${variableName}.abs()`,
+				insertText: `${variableName}.abs()`,
+				documentation: `Get absolute value of ${variableName}`,
+			},
+			{
+				label: `${variableName}.to_string()`,
+				insertText: `${variableName}.to_string()`,
+				documentation: `Convert ${variableName} to string`,
+			},
+		);
+	}
+
+	return suggestions;
+}
+
 monaco.languages.registerCompletionItemProvider("rust", {
 	provideCompletionItems: (model, position) => {
 		const word = model.getWordUntilPosition(position);
@@ -10,7 +173,51 @@ monaco.languages.registerCompletionItemProvider("rust", {
 			endColumn: word.endColumn,
 		};
 
+		// Extract variables from the current code
+		const code = model.getValue();
+		const extractedVariables = extractRustVariables(code);
+
+		// Create suggestions for extracted variables
+		const variableSuggestions = extractedVariables.map((variable) => ({
+			label: variable.name,
+			kind:
+				variable.type === "function"
+					? monaco.languages.CompletionItemKind.Function
+					: variable.type === "struct"
+						? monaco.languages.CompletionItemKind.Class
+						: monaco.languages.CompletionItemKind.Variable,
+			insertText: variable.name,
+			insertTextRules:
+				monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+			documentation: `${variable.type} (declared at line ${variable.line})`,
+			range: range,
+		}));
+
+		// Create suggestions for variable-related functions
+		const functionSuggestions: any[] = [];
+		extractedVariables.forEach((variable) => {
+			if (variable.type !== "function" && variable.type !== "struct") {
+				const relatedFunctions = getRustRelatedFunctions(
+					variable.name,
+					variable.type,
+				);
+				relatedFunctions.forEach((func) => {
+					functionSuggestions.push({
+						label: func.label,
+						kind: monaco.languages.CompletionItemKind.Snippet,
+						insertText: func.insertText,
+						insertTextRules:
+							monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+						documentation: func.documentation,
+						range: range,
+					});
+				});
+			}
+		});
+
 		const suggestions = [
+			...variableSuggestions,
+			...functionSuggestions,
 			{
 				label: "println!",
 				kind: monaco.languages.CompletionItemKind.Function,

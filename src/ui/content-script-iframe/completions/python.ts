@@ -1,5 +1,234 @@
 import * as monaco from "monaco-editor";
 
+// Helper function to extract variables from Python code
+function extractPythonVariables(code: string) {
+	const variables: Array<{ name: string; type: string; line: number }> = [];
+	const lines = code.split("\n");
+
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i].trim();
+
+		// Match simple variable assignments
+		const assignMatches = line.matchAll(/^(\w+)\s*=\s*(.+)/g);
+		for (const match of assignMatches) {
+			const name = match[1];
+			const value = match[2].trim();
+			let type = "variable";
+
+			// Try to infer type from assignment
+			if (value.match(/^\d+$/)) type = "int";
+			else if (value.match(/^\d*\.\d+$/)) type = "float";
+			else if (value.match(/^["'][^"']*["']$/)) type = "str";
+			else if (value.match(/^\[.*\]$/)) type = "list";
+			else if (value.match(/^\{.*\}$/)) type = "dict";
+			else if (value.match(/^set\(/)) type = "set";
+			else if (value.match(/^tuple\(/)) type = "tuple";
+			else if (value.startsWith("input(")) type = "str";
+			else if (value.startsWith("int(")) type = "int";
+			else if (value.startsWith("float(")) type = "float";
+			else if (value.startsWith("str(")) type = "str";
+			else if (value.startsWith("list(")) type = "list";
+			else if (value.startsWith("dict(")) type = "dict";
+
+			variables.push({ name, type, line: i + 1 });
+		}
+
+		// Match function definitions
+		const funcMatches = line.matchAll(/^def\s+(\w+)\s*\(/g);
+		for (const match of funcMatches) {
+			const name = match[1];
+			variables.push({ name, type: "function", line: i + 1 });
+		}
+
+		// Match class definitions
+		const classMatches = line.matchAll(/^class\s+(\w+)/g);
+		for (const match of classMatches) {
+			const name = match[1];
+			variables.push({ name, type: "class", line: i + 1 });
+		}
+
+		// Match for loop variables
+		const forMatches = line.matchAll(/^for\s+(\w+)\s+in\s+/g);
+		for (const match of forMatches) {
+			const name = match[1];
+			variables.push({ name, type: "iterator", line: i + 1 });
+		}
+	}
+
+	return variables;
+}
+
+// Helper function to suggest related functions for Python variable types
+function getPythonRelatedFunctions(variableName: string, variableType: string) {
+	const suggestions = [];
+
+	// Common operations for all variables
+	suggestions.push({
+		label: `print(${variableName})`,
+		insertText: `print(${variableName})`,
+		documentation: `Print ${variableName} (${variableType})`,
+	});
+
+	// String operations
+	if (variableType === "str" || variableType === "variable") {
+		suggestions.push(
+			{
+				label: `len(${variableName})`,
+				insertText: `len(${variableName})`,
+				documentation: `Get length of ${variableName}`,
+			},
+			{
+				label: `${variableName}.upper()`,
+				insertText: `${variableName}.upper()`,
+				documentation: `Convert ${variableName} to uppercase`,
+			},
+			{
+				label: `${variableName}.lower()`,
+				insertText: `${variableName}.lower()`,
+				documentation: `Convert ${variableName} to lowercase`,
+			},
+			{
+				label: `${variableName}.strip()`,
+				insertText: `${variableName}.strip()`,
+				documentation: `Remove whitespace from ${variableName}`,
+			},
+			{
+				label: `${variableName}.split()`,
+				insertText: `${variableName}.split(\${1:separator})`,
+				documentation: `Split ${variableName} into list`,
+			},
+		);
+	}
+
+	// List operations
+	if (variableType === "list" || variableType === "variable") {
+		suggestions.push(
+			{
+				label: `${variableName}.append()`,
+				insertText: `${variableName}.append(\${1:item})`,
+				documentation: `Add item to ${variableName}`,
+			},
+			{
+				label: `${variableName}.remove()`,
+				insertText: `${variableName}.remove(\${1:item})`,
+				documentation: `Remove item from ${variableName}`,
+			},
+			{
+				label: `${variableName}.pop()`,
+				insertText: `${variableName}.pop(\${1:index})`,
+				documentation: `Remove and return item from ${variableName}`,
+			},
+			{
+				label: `len(${variableName})`,
+				insertText: `len(${variableName})`,
+				documentation: `Get length of ${variableName}`,
+			},
+			{
+				label: `sorted(${variableName})`,
+				insertText: `sorted(${variableName})`,
+				documentation: `Return sorted version of ${variableName}`,
+			},
+			{
+				label: `${variableName}.sort()`,
+				insertText: `${variableName}.sort()`,
+				documentation: `Sort ${variableName} in place`,
+			},
+		);
+	}
+
+	// Dictionary operations
+	if (variableType === "dict" || variableType === "variable") {
+		suggestions.push(
+			{
+				label: `${variableName}.keys()`,
+				insertText: `${variableName}.keys()`,
+				documentation: `Get keys from ${variableName}`,
+			},
+			{
+				label: `${variableName}.values()`,
+				insertText: `${variableName}.values()`,
+				documentation: `Get values from ${variableName}`,
+			},
+			{
+				label: `${variableName}.items()`,
+				insertText: `${variableName}.items()`,
+				documentation: `Get key-value pairs from ${variableName}`,
+			},
+			{
+				label: `${variableName}.get()`,
+				insertText: `${variableName}.get(\${1:key}, \${2:default})`,
+				documentation: `Get value from ${variableName} with default`,
+			},
+		);
+	}
+
+	// Set operations
+	if (variableType === "set" || variableType === "variable") {
+		suggestions.push(
+			{
+				label: `${variableName}.add()`,
+				insertText: `${variableName}.add(\${1:item})`,
+				documentation: `Add item to ${variableName}`,
+			},
+			{
+				label: `${variableName}.remove()`,
+				insertText: `${variableName}.remove(\${1:item})`,
+				documentation: `Remove item from ${variableName}`,
+			},
+			{
+				label: `${variableName}.discard()`,
+				insertText: `${variableName}.discard(\${1:item})`,
+				documentation: `Remove item from ${variableName} if present`,
+			},
+		);
+	}
+
+	// Numeric operations
+	if (
+		variableType === "int" ||
+		variableType === "float" ||
+		variableType === "variable"
+	) {
+		suggestions.push(
+			{
+				label: `abs(${variableName})`,
+				insertText: `abs(${variableName})`,
+				documentation: `Get absolute value of ${variableName}`,
+			},
+			{
+				label: `str(${variableName})`,
+				insertText: `str(${variableName})`,
+				documentation: `Convert ${variableName} to string`,
+			},
+		);
+
+		// Integer specific
+		if (variableType === "int" || variableType === "variable") {
+			suggestions.push({
+				label: `float(${variableName})`,
+				insertText: `float(${variableName})`,
+				documentation: `Convert ${variableName} to float`,
+			});
+		}
+	}
+
+	// Common control flow with variables
+	suggestions.push(
+		{
+			label: `if ${variableName}`,
+			insertText: `if ${variableName}:\n    \${1:pass}`,
+			documentation: `Check if ${variableName} is truthy`,
+		},
+		{
+			label: `for item in ${variableName}`,
+			insertText: `for \${1:item} in ${variableName}:\n    \${2:pass}`,
+			documentation: `Iterate over ${variableName}`,
+		},
+	);
+
+	return suggestions;
+}
+
 monaco.languages.registerCompletionItemProvider("python", {
 	provideCompletionItems: (model, position) => {
 		const word = model.getWordUntilPosition(position);
@@ -10,7 +239,51 @@ monaco.languages.registerCompletionItemProvider("python", {
 			endColumn: word.endColumn,
 		};
 
+		// Extract variables from the current code
+		const code = model.getValue();
+		const extractedVariables = extractPythonVariables(code);
+
+		// Create suggestions for extracted variables
+		const variableSuggestions = extractedVariables.map((variable) => ({
+			label: variable.name,
+			kind:
+				variable.type === "function"
+					? monaco.languages.CompletionItemKind.Function
+					: variable.type === "class"
+						? monaco.languages.CompletionItemKind.Class
+						: monaco.languages.CompletionItemKind.Variable,
+			insertText: variable.name,
+			insertTextRules:
+				monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+			documentation: `${variable.type} (declared at line ${variable.line})`,
+			range: range,
+		}));
+
+		// Create suggestions for variable-related functions
+		const functionSuggestions: any[] = [];
+		extractedVariables.forEach((variable) => {
+			if (variable.type !== "function" && variable.type !== "class") {
+				const relatedFunctions = getPythonRelatedFunctions(
+					variable.name,
+					variable.type,
+				);
+				relatedFunctions.forEach((func) => {
+					functionSuggestions.push({
+						label: func.label,
+						kind: monaco.languages.CompletionItemKind.Snippet,
+						insertText: func.insertText,
+						insertTextRules:
+							monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+						documentation: func.documentation,
+						range: range,
+					});
+				});
+			}
+		});
+
 		const suggestions = [
+			...variableSuggestions,
+			...functionSuggestions,
 			// Built-in functions
 			{
 				label: "print",

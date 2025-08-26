@@ -1,5 +1,222 @@
 import * as monaco from "monaco-editor";
 
+// Helper function to extract variables from C# code
+function extractCSharpVariables(code: string) {
+	const variables: Array<{ name: string; type: string; line: number }> = [];
+	const lines = code.split("\n");
+
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i].trim();
+
+		// Match variable declarations
+		const varMatches = line.matchAll(
+			/\b(int|float|double|decimal|char|bool|string|DateTime|List<[^>]+>|Dictionary<[^>]+>|Array|StringBuilder)\s+(\w+)(?:\s*=\s*[^;,]+)?\s*[;,]/g,
+		);
+		for (const match of varMatches) {
+			const type = match[1];
+			const name = match[2];
+			variables.push({ name, type, line: i + 1 });
+		}
+
+		// Match var declarations with type inference
+		const varInferMatches = line.matchAll(/var\s+(\w+)\s*=\s*(.+);/g);
+		for (const match of varInferMatches) {
+			const name = match[1];
+			const value = match[2].trim();
+			let type = "var";
+
+			if (value.match(/^\d+$/)) type = "int";
+			else if (value.match(/^\d*\.\d+$/)) type = "double";
+			else if (value.match(/^"[^"]*"$/)) type = "string";
+			else if (value.match(/^new List/)) type = "List";
+			else if (value.match(/^new Dictionary/)) type = "Dictionary";
+
+			variables.push({ name, type, line: i + 1 });
+		}
+
+		// Match method declarations
+		const methodMatches = line.matchAll(
+			/\b(public|private|protected|internal)?\s*(static)?\s*(int|float|double|string|bool|void)\s+(\w+)\s*\(/g,
+		);
+		for (const match of methodMatches) {
+			const returnType = match[3];
+			const name = match[4];
+			if (
+				name !== "Main" &&
+				name !== "if" &&
+				name !== "while" &&
+				name !== "for"
+			) {
+				variables.push({ name, type: `${returnType} method`, line: i + 1 });
+			}
+		}
+
+		// Match class declarations
+		const classMatches = line.matchAll(
+			/\b(public|private|protected|internal)?\s*class\s+(\w+)/g,
+		);
+		for (const match of classMatches) {
+			const name = match[2];
+			variables.push({ name, type: "class", line: i + 1 });
+		}
+	}
+
+	return variables;
+}
+
+// Helper function to suggest related functions for C# variable types
+function getCSharpRelatedFunctions(variableName: string, variableType: string) {
+	const suggestions = [];
+
+	// Console operations for all variables
+	suggestions.push({
+		label: `Console.WriteLine(${variableName})`,
+		insertText: `Console.WriteLine(${variableName});`,
+		documentation: `Print ${variableName} (${variableType})`,
+	});
+
+	// String operations
+	if (variableType === "string") {
+		suggestions.push(
+			{
+				label: `${variableName}.Length`,
+				insertText: `${variableName}.Length`,
+				documentation: `Get length of ${variableName}`,
+			},
+			{
+				label: `${variableName}.ToUpper()`,
+				insertText: `${variableName}.ToUpper()`,
+				documentation: `Convert ${variableName} to uppercase`,
+			},
+			{
+				label: `${variableName}.ToLower()`,
+				insertText: `${variableName}.ToLower()`,
+				documentation: `Convert ${variableName} to lowercase`,
+			},
+			{
+				label: `${variableName}.Split()`,
+				insertText: `${variableName}.Split('\${1:separator}')`,
+				documentation: `Split ${variableName}`,
+			},
+			{
+				label: `${variableName}.Contains()`,
+				insertText: `${variableName}.Contains("\${1:substring}")`,
+				documentation: `Check if ${variableName} contains substring`,
+			},
+		);
+	}
+
+	// List operations
+	if (variableType.includes("List") || variableType === "List") {
+		suggestions.push(
+			{
+				label: `${variableName}.Add()`,
+				insertText: `${variableName}.Add(\${1:item});`,
+				documentation: `Add item to ${variableName}`,
+			},
+			{
+				label: `${variableName}.Remove()`,
+				insertText: `${variableName}.Remove(\${1:item});`,
+				documentation: `Remove item from ${variableName}`,
+			},
+			{
+				label: `${variableName}.Count`,
+				insertText: `${variableName}.Count`,
+				documentation: `Get count of ${variableName}`,
+			},
+			{
+				label: `${variableName}.Sort()`,
+				insertText: `${variableName}.Sort();`,
+				documentation: `Sort ${variableName}`,
+			},
+		);
+	}
+
+	// Dictionary operations
+	if (variableType.includes("Dictionary") || variableType === "Dictionary") {
+		suggestions.push(
+			{
+				label: `${variableName}.Add()`,
+				insertText: `${variableName}.Add(\${1:key}, \${2:value});`,
+				documentation: `Add key-value pair to ${variableName}`,
+			},
+			{
+				label: `${variableName}.ContainsKey()`,
+				insertText: `${variableName}.ContainsKey(\${1:key})`,
+				documentation: `Check if ${variableName} contains key`,
+			},
+			{
+				label: `${variableName}.TryGetValue()`,
+				insertText: `${variableName}.TryGetValue(\${1:key}, out \${2:value})`,
+				documentation: `Try get value from ${variableName}`,
+			},
+		);
+	}
+
+	// StringBuilder operations
+	if (variableType === "StringBuilder") {
+		suggestions.push(
+			{
+				label: `${variableName}.Append()`,
+				insertText: `${variableName}.Append(\${1:value});`,
+				documentation: `Append to ${variableName}`,
+			},
+			{
+				label: `${variableName}.ToString()`,
+				insertText: `${variableName}.ToString()`,
+				documentation: `Convert ${variableName} to string`,
+			},
+		);
+	}
+
+	// Numeric operations
+	if (
+		variableType === "int" ||
+		variableType === "double" ||
+		variableType === "float" ||
+		variableType === "decimal"
+	) {
+		suggestions.push(
+			{
+				label: `Math.Abs(${variableName})`,
+				insertText: `Math.Abs(${variableName})`,
+				documentation: `Get absolute value of ${variableName}`,
+			},
+			{
+				label: `${variableName}.ToString()`,
+				insertText: `${variableName}.ToString()`,
+				documentation: `Convert ${variableName} to string`,
+			},
+		);
+
+		if (
+			variableType === "double" ||
+			variableType === "float" ||
+			variableType === "decimal"
+		) {
+			suggestions.push(
+				{
+					label: `Math.Round(${variableName})`,
+					insertText: `Math.Round(${variableName})`,
+					documentation: `Round ${variableName}`,
+				},
+				{
+					label: `Math.Floor(${variableName})`,
+					insertText: `Math.Floor(${variableName})`,
+					documentation: `Floor of ${variableName}`,
+				},
+				{
+					label: `Math.Ceiling(${variableName})`,
+					insertText: `Math.Ceiling(${variableName})`,
+					documentation: `Ceiling of ${variableName}`,
+				},
+			);
+		}
+	}
+
+	return suggestions;
+}
+
 monaco.languages.registerCompletionItemProvider("csharp", {
 	provideCompletionItems: (model, position) => {
 		const word = model.getWordUntilPosition(position);
@@ -10,7 +227,50 @@ monaco.languages.registerCompletionItemProvider("csharp", {
 			endColumn: word.endColumn,
 		};
 
+		// Extract variables from the current code
+		const code = model.getValue();
+		const extractedVariables = extractCSharpVariables(code);
+
+		// Create suggestions for extracted variables
+		const variableSuggestions = extractedVariables.map((variable) => ({
+			label: variable.name,
+			kind: variable.type.includes("method")
+				? monaco.languages.CompletionItemKind.Function
+				: variable.type === "class"
+					? monaco.languages.CompletionItemKind.Class
+					: monaco.languages.CompletionItemKind.Variable,
+			insertText: variable.name,
+			insertTextRules:
+				monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+			documentation: `${variable.type} (declared at line ${variable.line})`,
+			range: range,
+		}));
+
+		// Create suggestions for variable-related functions
+		const functionSuggestions: any[] = [];
+		extractedVariables.forEach((variable) => {
+			if (!variable.type.includes("method") && variable.type !== "class") {
+				const relatedFunctions = getCSharpRelatedFunctions(
+					variable.name,
+					variable.type,
+				);
+				relatedFunctions.forEach((func) => {
+					functionSuggestions.push({
+						label: func.label,
+						kind: monaco.languages.CompletionItemKind.Snippet,
+						insertText: func.insertText,
+						insertTextRules:
+							monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+						documentation: func.documentation,
+						range: range,
+					});
+				});
+			}
+		});
+
 		const suggestions = [
+			...variableSuggestions,
+			...functionSuggestions,
 			{
 				label: "Console.WriteLine",
 				kind: monaco.languages.CompletionItemKind.Method,

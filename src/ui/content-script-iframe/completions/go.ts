@@ -1,5 +1,214 @@
 import * as monaco from "monaco-editor";
 
+// Helper function to extract variables from Go code
+function extractGoVariables(code: string) {
+	const variables: Array<{ name: string; type: string; line: number }> = [];
+	const lines = code.split("\n");
+
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i].trim();
+
+		// Match variable declarations with var
+		const varMatches = line.matchAll(
+			/var\s+(\w+)\s+(int|float64|float32|string|bool|byte|rune|\[\]int|\[\]string|map\[[^\]]+\][^\s]+)/g,
+		);
+		for (const match of varMatches) {
+			const name = match[1];
+			const type = match[2];
+			variables.push({ name, type, line: i + 1 });
+		}
+
+		// Match short variable declarations
+		const shortMatches = line.matchAll(/(\w+)\s*:=\s*(.+)/g);
+		for (const match of shortMatches) {
+			const name = match[1];
+			const value = match[2].trim();
+			let type = "variable";
+
+			// Try to infer type
+			if (value.match(/^\d+$/)) type = "int";
+			else if (value.match(/^\d*\.\d+$/)) type = "float64";
+			else if (value.match(/^"[^"]*"$/)) type = "string";
+			else if (value.match(/^`[^`]*`$/)) type = "string";
+			else if (value === "true" || value === "false") type = "bool";
+			else if (value.match(/^\[\]/)) type = "slice";
+			else if (value.match(/^make\(map/)) type = "map";
+			else if (value.match(/^make\(/)) type = "slice";
+
+			variables.push({ name, type, line: i + 1 });
+		}
+
+		// Match function declarations
+		const funcMatches = line.matchAll(/func\s+(\w+)\s*\(/g);
+		for (const match of funcMatches) {
+			const name = match[1];
+			if (name !== "main") {
+				variables.push({ name, type: "function", line: i + 1 });
+			}
+		}
+
+		// Match struct declarations
+		const structMatches = line.matchAll(/type\s+(\w+)\s+struct/g);
+		for (const match of structMatches) {
+			const name = match[1];
+			variables.push({ name, type: "struct", line: i + 1 });
+		}
+	}
+
+	return variables;
+}
+
+// Helper function to suggest related functions for Go variable types
+function getGoRelatedFunctions(variableName: string, variableType: string) {
+	const suggestions = [];
+
+	// fmt operations for all variables
+	suggestions.push({
+		label: `fmt.Println(${variableName})`,
+		insertText: `fmt.Println(${variableName})`,
+		documentation: `Print ${variableName} (${variableType})`,
+	});
+
+	// String operations
+	if (variableType === "string") {
+		suggestions.push(
+			{
+				label: `len(${variableName})`,
+				insertText: `len(${variableName})`,
+				documentation: `Get length of ${variableName}`,
+			},
+			{
+				label: `strings.ToUpper(${variableName})`,
+				insertText: `strings.ToUpper(${variableName})`,
+				documentation: `Convert ${variableName} to uppercase`,
+			},
+			{
+				label: `strings.ToLower(${variableName})`,
+				insertText: `strings.ToLower(${variableName})`,
+				documentation: `Convert ${variableName} to lowercase`,
+			},
+			{
+				label: `strings.Split(${variableName})`,
+				insertText: `strings.Split(${variableName}, "\${1:separator}")`,
+				documentation: `Split ${variableName}`,
+			},
+			{
+				label: `strings.Contains(${variableName})`,
+				insertText: `strings.Contains(${variableName}, "\${1:substr}")`,
+				documentation: `Check if ${variableName} contains substring`,
+			},
+		);
+	}
+
+	// Slice operations
+	if (variableType.includes("[]") || variableType === "slice") {
+		suggestions.push(
+			{
+				label: `len(${variableName})`,
+				insertText: `len(${variableName})`,
+				documentation: `Get length of ${variableName}`,
+			},
+			{
+				label: `cap(${variableName})`,
+				insertText: `cap(${variableName})`,
+				documentation: `Get capacity of ${variableName}`,
+			},
+			{
+				label: `append(${variableName})`,
+				insertText: `${variableName} = append(${variableName}, \${1:value})`,
+				documentation: `Append to ${variableName}`,
+			},
+			{
+				label: `sort.Ints(${variableName})`,
+				insertText: `sort.Ints(${variableName})`,
+				documentation: `Sort ${variableName} (for int slices)`,
+			},
+			{
+				label: `sort.Strings(${variableName})`,
+				insertText: `sort.Strings(${variableName})`,
+				documentation: `Sort ${variableName} (for string slices)`,
+			},
+		);
+	}
+
+	// Map operations
+	if (variableType.includes("map") || variableType === "map") {
+		suggestions.push(
+			{
+				label: `len(${variableName})`,
+				insertText: `len(${variableName})`,
+				documentation: `Get length of ${variableName}`,
+			},
+			{
+				label: `delete(${variableName})`,
+				insertText: `delete(${variableName}, \${1:key})`,
+				documentation: `Delete key from ${variableName}`,
+			},
+			{
+				label: `${variableName}[key], ok`,
+				insertText: `\${1:value}, \${2:ok} := ${variableName}[\${3:key}]`,
+				documentation: `Get value from ${variableName} with ok check`,
+			},
+		);
+	}
+
+	// Numeric operations
+	if (
+		variableType === "int" ||
+		variableType === "int64" ||
+		variableType === "int32"
+	) {
+		suggestions.push(
+			{
+				label: `strconv.Itoa(${variableName})`,
+				insertText: `strconv.Itoa(${variableName})`,
+				documentation: `Convert ${variableName} to string`,
+			},
+			{
+				label: `math.Abs(${variableName})`,
+				insertText: `math.Abs(float64(${variableName}))`,
+				documentation: `Get absolute value of ${variableName}`,
+			},
+		);
+	}
+
+	if (variableType === "float64" || variableType === "float32") {
+		suggestions.push(
+			{
+				label: `math.Floor(${variableName})`,
+				insertText: `math.Floor(${variableName})`,
+				documentation: `Floor of ${variableName}`,
+			},
+			{
+				label: `math.Ceil(${variableName})`,
+				insertText: `math.Ceil(${variableName})`,
+				documentation: `Ceiling of ${variableName}`,
+			},
+			{
+				label: `math.Round(${variableName})`,
+				insertText: `math.Round(${variableName})`,
+				documentation: `Round ${variableName}`,
+			},
+		);
+	}
+
+	// Control flow suggestions
+	suggestions.push(
+		{
+			label: `if ${variableName}`,
+			insertText: `if ${variableName} {\n\t\${1:// code}\n}`,
+			documentation: `Check if ${variableName} is truthy`,
+		},
+		{
+			label: `for range ${variableName}`,
+			insertText: `for \${1:index}, \${2:value} := range ${variableName} {\n\t\${3:// code}\n}`,
+			documentation: `Iterate over ${variableName}`,
+		},
+	);
+
+	return suggestions;
+}
+
 monaco.languages.registerCompletionItemProvider("go", {
 	provideCompletionItems: (model, position) => {
 		const word = model.getWordUntilPosition(position);
@@ -10,7 +219,51 @@ monaco.languages.registerCompletionItemProvider("go", {
 			endColumn: word.endColumn,
 		};
 
+		// Extract variables from the current code
+		const code = model.getValue();
+		const extractedVariables = extractGoVariables(code);
+
+		// Create suggestions for extracted variables
+		const variableSuggestions = extractedVariables.map((variable) => ({
+			label: variable.name,
+			kind:
+				variable.type === "function"
+					? monaco.languages.CompletionItemKind.Function
+					: variable.type === "struct"
+						? monaco.languages.CompletionItemKind.Class
+						: monaco.languages.CompletionItemKind.Variable,
+			insertText: variable.name,
+			insertTextRules:
+				monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+			documentation: `${variable.type} (declared at line ${variable.line})`,
+			range: range,
+		}));
+
+		// Create suggestions for variable-related functions
+		const functionSuggestions: any[] = [];
+		extractedVariables.forEach((variable) => {
+			if (variable.type !== "function" && variable.type !== "struct") {
+				const relatedFunctions = getGoRelatedFunctions(
+					variable.name,
+					variable.type,
+				);
+				relatedFunctions.forEach((func) => {
+					functionSuggestions.push({
+						label: func.label,
+						kind: monaco.languages.CompletionItemKind.Snippet,
+						insertText: func.insertText,
+						insertTextRules:
+							monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+						documentation: func.documentation,
+						range: range,
+					});
+				});
+			}
+		});
+
 		const suggestions = [
+			...variableSuggestions,
+			...functionSuggestions,
 			{
 				label: "fmt.Println",
 				kind: monaco.languages.CompletionItemKind.Function,

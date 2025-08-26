@@ -1,5 +1,182 @@
 import * as monaco from "monaco-editor";
 
+// Helper function to extract variables from PHP code
+function extractPHPVariables(code: string) {
+	const variables: Array<{ name: string; type: string; line: number }> = [];
+	const lines = code.split("\n");
+
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i].trim();
+
+		// Match variable assignments
+		const varMatches = line.matchAll(/(\$\w+)\s*=\s*(.+);/g);
+		for (const match of varMatches) {
+			const name = match[1];
+			const value = match[2].trim();
+			let type = "variable";
+
+			// Try to infer type from assignment
+			if (value.match(/^\d+$/)) type = "int";
+			else if (value.match(/^\d*\.\d+$/)) type = "float";
+			else if (value.match(/^["'][^"']*["']$/)) type = "string";
+			else if (value.match(/^array\(/)) type = "array";
+			else if (value.match(/^\[/)) type = "array";
+			else if (value === "true" || value === "false") type = "bool";
+			else if (value.match(/^new\s+/)) type = "object";
+
+			variables.push({ name, type, line: i + 1 });
+		}
+
+		// Match function definitions
+		const funcMatches = line.matchAll(/function\s+(\w+)\s*\(/g);
+		for (const match of funcMatches) {
+			const name = match[1];
+			variables.push({ name, type: "function", line: i + 1 });
+		}
+
+		// Match class definitions
+		const classMatches = line.matchAll(/class\s+(\w+)/g);
+		for (const match of classMatches) {
+			const name = match[1];
+			variables.push({ name, type: "class", line: i + 1 });
+		}
+	}
+
+	return variables;
+}
+
+// Helper function to suggest related functions for PHP variable types
+function getPHPRelatedFunctions(variableName: string, variableType: string) {
+	const suggestions = [];
+
+	// echo for all variables
+	suggestions.push({
+		label: `echo ${variableName}`,
+		insertText: `echo ${variableName};`,
+		documentation: `Output ${variableName} (${variableType})`,
+	});
+
+	// var_dump for debugging
+	suggestions.push({
+		label: `var_dump(${variableName})`,
+		insertText: `var_dump(${variableName});`,
+		documentation: `Debug output ${variableName}`,
+	});
+
+	// String operations
+	if (variableType === "string" || variableType === "variable") {
+		suggestions.push(
+			{
+				label: `strlen(${variableName})`,
+				insertText: `strlen(${variableName})`,
+				documentation: `Get length of ${variableName}`,
+			},
+			{
+				label: `strtoupper(${variableName})`,
+				insertText: `strtoupper(${variableName})`,
+				documentation: `Convert ${variableName} to uppercase`,
+			},
+			{
+				label: `strtolower(${variableName})`,
+				insertText: `strtolower(${variableName})`,
+				documentation: `Convert ${variableName} to lowercase`,
+			},
+			{
+				label: `explode(',', ${variableName})`,
+				insertText: `explode('\${1:delimiter}', ${variableName})`,
+				documentation: `Split ${variableName} into array`,
+			},
+			{
+				label: `trim(${variableName})`,
+				insertText: `trim(${variableName})`,
+				documentation: `Trim whitespace from ${variableName}`,
+			},
+		);
+	}
+
+	// Array operations
+	if (variableType === "array" || variableType === "variable") {
+		suggestions.push(
+			{
+				label: `count(${variableName})`,
+				insertText: `count(${variableName})`,
+				documentation: `Get count of ${variableName}`,
+			},
+			{
+				label: `array_push(${variableName})`,
+				insertText: `array_push(${variableName}, \${1:value});`,
+				documentation: `Add element to ${variableName}`,
+			},
+			{
+				label: `array_pop(${variableName})`,
+				insertText: `array_pop(${variableName})`,
+				documentation: `Remove last element from ${variableName}`,
+			},
+			{
+				label: `sort(${variableName})`,
+				insertText: `sort(${variableName});`,
+				documentation: `Sort ${variableName}`,
+			},
+			{
+				label: `in_array($value, ${variableName})`,
+				insertText: `in_array(\${1:value}, ${variableName})`,
+				documentation: `Check if value exists in ${variableName}`,
+			},
+			{
+				label: `implode(',', ${variableName})`,
+				insertText: `implode('\${1:separator}', ${variableName})`,
+				documentation: `Join ${variableName} elements into string`,
+			},
+		);
+	}
+
+	// Numeric operations
+	if (
+		variableType === "int" ||
+		variableType === "float" ||
+		variableType === "variable"
+	) {
+		suggestions.push(
+			{
+				label: `abs(${variableName})`,
+				insertText: `abs(${variableName})`,
+				documentation: `Get absolute value of ${variableName}`,
+			},
+			{
+				label: `round(${variableName})`,
+				insertText: `round(${variableName})`,
+				documentation: `Round ${variableName}`,
+			},
+			{
+				label: `is_numeric(${variableName})`,
+				insertText: `is_numeric(${variableName})`,
+				documentation: `Check if ${variableName} is numeric`,
+			},
+		);
+	}
+
+	// Type checking functions
+	suggestions.push(
+		{
+			label: `gettype(${variableName})`,
+			insertText: `gettype(${variableName})`,
+			documentation: `Get type of ${variableName}`,
+		},
+		{
+			label: `isset(${variableName})`,
+			insertText: `isset(${variableName})`,
+			documentation: `Check if ${variableName} is set`,
+		},
+		{
+			label: `empty(${variableName})`,
+			insertText: `empty(${variableName})`,
+			documentation: `Check if ${variableName} is empty`,
+		},
+	);
+
+	return suggestions;
+}
+
 monaco.languages.registerCompletionItemProvider("php", {
 	provideCompletionItems: (model, position) => {
 		const word = model.getWordUntilPosition(position);
@@ -10,7 +187,51 @@ monaco.languages.registerCompletionItemProvider("php", {
 			endColumn: word.endColumn,
 		};
 
+		// Extract variables from the current code
+		const code = model.getValue();
+		const extractedVariables = extractPHPVariables(code);
+
+		// Create suggestions for extracted variables
+		const variableSuggestions = extractedVariables.map((variable) => ({
+			label: variable.name,
+			kind:
+				variable.type === "function"
+					? monaco.languages.CompletionItemKind.Function
+					: variable.type === "class"
+						? monaco.languages.CompletionItemKind.Class
+						: monaco.languages.CompletionItemKind.Variable,
+			insertText: variable.name,
+			insertTextRules:
+				monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+			documentation: `${variable.type} (declared at line ${variable.line})`,
+			range: range,
+		}));
+
+		// Create suggestions for variable-related functions
+		const functionSuggestions: any[] = [];
+		extractedVariables.forEach((variable) => {
+			if (variable.type !== "function" && variable.type !== "class") {
+				const relatedFunctions = getPHPRelatedFunctions(
+					variable.name,
+					variable.type,
+				);
+				relatedFunctions.forEach((func) => {
+					functionSuggestions.push({
+						label: func.label,
+						kind: monaco.languages.CompletionItemKind.Snippet,
+						insertText: func.insertText,
+						insertTextRules:
+							monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+						documentation: func.documentation,
+						range: range,
+					});
+				});
+			}
+		});
+
 		const suggestions = [
+			...variableSuggestions,
+			...functionSuggestions,
 			{
 				label: "echo",
 				kind: monaco.languages.CompletionItemKind.Function,

@@ -1,5 +1,169 @@
 import * as monaco from "monaco-editor";
 
+// Helper function to extract tables and columns from SQL code
+function extractSQLEntities(code: string) {
+	const entities: Array<{ name: string; type: string; line: number }> = [];
+	const lines = code.split("\n");
+
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i].trim().toLowerCase();
+
+		// Match table names in CREATE TABLE statements
+		const createMatches = line.matchAll(/create\s+table\s+(\w+)/g);
+		for (const match of createMatches) {
+			const name = match[1];
+			entities.push({ name, type: "table", line: i + 1 });
+		}
+
+		// Match table names in FROM clauses
+		const fromMatches = line.matchAll(/from\s+(\w+)/g);
+		for (const match of fromMatches) {
+			const name = match[1];
+			entities.push({ name, type: "table", line: i + 1 });
+		}
+
+		// Match table names in JOIN clauses
+		const joinMatches = line.matchAll(/join\s+(\w+)/g);
+		for (const match of joinMatches) {
+			const name = match[1];
+			entities.push({ name, type: "table", line: i + 1 });
+		}
+
+		// Match column names in SELECT statements
+		const selectMatches = line.matchAll(/select\s+([^from]+)/g);
+		for (const match of selectMatches) {
+			const columns = match[1];
+			const columnNames = columns
+				.split(",")
+				.map((col) => col.trim().replace(/.*\./, ""));
+			columnNames.forEach((colName) => {
+				if (colName && colName !== "*" && colName.match(/^\w+$/)) {
+					entities.push({ name: colName, type: "column", line: i + 1 });
+				}
+			});
+		}
+
+		// Match stored procedures and functions
+		const procMatches = line.matchAll(/create\s+(procedure|function)\s+(\w+)/g);
+		for (const match of procMatches) {
+			const type = match[1];
+			const name = match[2];
+			entities.push({ name, type, line: i + 1 });
+		}
+	}
+
+	// Remove duplicates
+	const uniqueEntities = entities.filter(
+		(entity, index, self) =>
+			index ===
+			self.findIndex((e) => e.name === entity.name && e.type === entity.type),
+	);
+
+	return uniqueEntities;
+}
+
+// Helper function to suggest related SQL operations
+function getSQLRelatedFunctions(entityName: string, entityType: string) {
+	const suggestions = [];
+
+	if (entityType === "table") {
+		suggestions.push(
+			{
+				label: `SELECT * FROM ${entityName}`,
+				insertText: `SELECT * FROM ${entityName}`,
+				documentation: `Select all from ${entityName} table`,
+			},
+			{
+				label: `SELECT COUNT(*) FROM ${entityName}`,
+				insertText: `SELECT COUNT(*) FROM ${entityName}`,
+				documentation: `Count rows in ${entityName} table`,
+			},
+			{
+				label: `INSERT INTO ${entityName}`,
+				insertText: `INSERT INTO ${entityName} (\${1:columns}) VALUES (\${2:values})`,
+				documentation: `Insert into ${entityName} table`,
+			},
+			{
+				label: `UPDATE ${entityName} SET`,
+				insertText: `UPDATE ${entityName} SET \${1:column} = \${2:value} WHERE \${3:condition}`,
+				documentation: `Update ${entityName} table`,
+			},
+			{
+				label: `DELETE FROM ${entityName}`,
+				insertText: `DELETE FROM ${entityName} WHERE \${1:condition}`,
+				documentation: `Delete from ${entityName} table`,
+			},
+			{
+				label: `DROP TABLE ${entityName}`,
+				insertText: `DROP TABLE ${entityName}`,
+				documentation: `Drop ${entityName} table`,
+			},
+		);
+	}
+
+	if (entityType === "column") {
+		suggestions.push(
+			{
+				label: `ORDER BY ${entityName}`,
+				insertText: `ORDER BY ${entityName}`,
+				documentation: `Sort by ${entityName} column`,
+			},
+			{
+				label: `GROUP BY ${entityName}`,
+				insertText: `GROUP BY ${entityName}`,
+				documentation: `Group by ${entityName} column`,
+			},
+			{
+				label: `WHERE ${entityName} =`,
+				insertText: `WHERE ${entityName} = \${1:value}`,
+				documentation: `Filter by ${entityName} column`,
+			},
+			{
+				label: `COUNT(${entityName})`,
+				insertText: `COUNT(${entityName})`,
+				documentation: `Count ${entityName} column`,
+			},
+			{
+				label: `MAX(${entityName})`,
+				insertText: `MAX(${entityName})`,
+				documentation: `Maximum value of ${entityName}`,
+			},
+			{
+				label: `MIN(${entityName})`,
+				insertText: `MIN(${entityName})`,
+				documentation: `Minimum value of ${entityName}`,
+			},
+			{
+				label: `AVG(${entityName})`,
+				insertText: `AVG(${entityName})`,
+				documentation: `Average value of ${entityName}`,
+			},
+			{
+				label: `SUM(${entityName})`,
+				insertText: `SUM(${entityName})`,
+				documentation: `Sum of ${entityName}`,
+			},
+		);
+	}
+
+	if (entityType === "procedure" || entityType === "function") {
+		suggestions.push(
+			{
+				label: `CALL ${entityName}()`,
+				insertText: `CALL ${entityName}(\${1:parameters})`,
+				documentation: `Execute ${entityName} ${entityType}`,
+			},
+			{
+				label: `DROP ${entityType.toUpperCase()} ${entityName}`,
+				insertText: `DROP ${entityType.toUpperCase()} ${entityName}`,
+				documentation: `Drop ${entityName} ${entityType}`,
+			},
+		);
+	}
+
+	return suggestions;
+}
+
 monaco.languages.registerCompletionItemProvider("sql", {
 	provideCompletionItems: (model, position) => {
 		const word = model.getWordUntilPosition(position);
@@ -10,7 +174,48 @@ monaco.languages.registerCompletionItemProvider("sql", {
 			endColumn: word.endColumn,
 		};
 
+		// Extract entities from the current code
+		const code = model.getValue();
+		const extractedEntities = extractSQLEntities(code);
+
+		// Create suggestions for extracted entities
+		const entitySuggestions = extractedEntities.map((entity) => ({
+			label: entity.name,
+			kind:
+				entity.type === "table"
+					? monaco.languages.CompletionItemKind.Class
+					: entity.type === "column"
+						? monaco.languages.CompletionItemKind.Field
+						: entity.type === "procedure" || entity.type === "function"
+							? monaco.languages.CompletionItemKind.Function
+							: monaco.languages.CompletionItemKind.Variable,
+			insertText: entity.name,
+			insertTextRules:
+				monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+			documentation: `${entity.type} (found at line ${entity.line})`,
+			range: range,
+		}));
+
+		// Create suggestions for entity-related functions
+		const functionSuggestions: any[] = [];
+		extractedEntities.forEach((entity) => {
+			const relatedFunctions = getSQLRelatedFunctions(entity.name, entity.type);
+			relatedFunctions.forEach((func) => {
+				functionSuggestions.push({
+					label: func.label,
+					kind: monaco.languages.CompletionItemKind.Snippet,
+					insertText: func.insertText,
+					insertTextRules:
+						monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+					documentation: func.documentation,
+					range: range,
+				});
+			});
+		});
+
 		const suggestions = [
+			...entitySuggestions,
+			...functionSuggestions,
 			{
 				label: "SELECT",
 				kind: monaco.languages.CompletionItemKind.Keyword,
