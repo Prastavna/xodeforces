@@ -4,9 +4,43 @@
 
 <script setup lang="ts">
 import * as monaco from "monaco-editor";
+import "monaco-editor/esm/vs/language/typescript/monaco.contribution";
+import "monaco-editor/esm/vs/language/css/monaco.contribution";
+import "monaco-editor/esm/vs/language/json/monaco.contribution";
+import "monaco-editor/esm/vs/editor/contrib/find/browser/findController.js";
+
+import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
+import cssWorker from "monaco-editor/esm/vs/language/css/css.worker?worker";
+import htmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";
+import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
+import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
+
+import "../language-configs/completions";
+import "../language-configs/diagnostics";
+import "../language-configs/hover";
+import "../language-configs/document-formatting/";
+
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { setupCustomThemes } from "../constants/custom-themes";
 import { useEditorConfig } from "../stores/editor-config";
+
+self.MonacoEnvironment = {
+	getWorker(_, label) {
+		if (label === "json") {
+			return new jsonWorker();
+		}
+		if (label === "css" || label === "scss" || label === "less") {
+			return new cssWorker();
+		}
+		if (label === "html" || label === "handlebars" || label === "razor") {
+			return new htmlWorker();
+		}
+		if (label === "typescript" || label === "javascript") {
+			return new tsWorker();
+		}
+		return new editorWorker();
+	},
+};
 
 const editorConfig = useEditorConfig();
 
