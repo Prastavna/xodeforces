@@ -47,23 +47,17 @@ jobs:
             echo "tag_name=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
           fi
 
+      - name: Make script executable
+        run: chmod +x ./scripts/zip.sh
+
       - name: Create extension packages
-        run: |
-          # Create Chrome package
-          cd dist/chrome
-          zip -r ../../xodeforces-${{ steps.version.outputs.version }}-chrome.zip .
-          cd ../..
-          
-          # Create Firefox package
-          cd dist/firefox
-          zip -r ../../xodeforces-${{ steps.version.outputs.version }}-firefox.zip .
-          cd ../..
+        run: ./scripts/zip.sh
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.tag_name }}
-          name: Release ${{ steps.version.outputs.tag_name }}
+          name: ${{ steps.version.outputs.tag_name }}
           files: |
             xodeforces-${{ steps.version.outputs.version }}-chrome.zip
             xodeforces-${{ steps.version.outputs.version }}-firefox.zip
