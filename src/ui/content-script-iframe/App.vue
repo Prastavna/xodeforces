@@ -36,6 +36,16 @@
           >
             Issues
           </a>
+          <UPopover
+            mode="hover"
+          >
+            <UIcon name="i-heroicons-information-circle" class="size-5 cursor-pointer" />
+            <template #content>
+              <div class="w-48 p-2">
+                All the completions, hover details, diagnostics and formatting rules are defined manually. If you find any issues please file a issue on github.
+              </div>
+            </template>
+          </UPopover>
         </div>
       </div>
       
