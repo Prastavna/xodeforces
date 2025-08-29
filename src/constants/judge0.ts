@@ -89,8 +89,9 @@ export const JUDGE0_STATUS_MAP: Record<
 	14: { name: "Exec Format Error", color: "red" },
 };
 
+import { Judge0Providers } from "../services/judge0-providers/types";
 
 export const DEFAULT_JUDGE0_CONFIG = {
-	baseUrl: JUDGE0_BASE_URL,
 	apiKey: "",
+	provider: Judge0Providers.RAPIDAPI,
 };
