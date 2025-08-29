@@ -74,7 +74,7 @@ const validateModel = (model: monaco.editor.ITextModel) => {
 			}
 		}
 
-		if (line.includes("sin") || line.includes("cos") || line.includes("sqrt")) {
+		if (/\b(sin|cos|tan|sqrt|pow|log|exp|floor|ceil|fabs)\s*\(/.test(line)) {
 			const includeExists = lines.some((l) => l.includes("#include <math.h>"));
 			if (!includeExists) {
 				markers.push({
@@ -444,7 +444,7 @@ monaco.languages.registerCodeActionProvider("c", {
 			}
 		}
 
-		if (line.includes("sin") || line.includes("cos") || line.includes("sqrt")) {
+		if (/\b(sin|cos|tan|sqrt|pow|log|exp|floor|ceil|fabs)\s*\(/.test(line)) {
 			const hasMath = lines.some((l) => l.includes("#include <math.h>"));
 			if (!hasMath) {
 				actions.push({

@@ -59,9 +59,11 @@ const validateModel = (model: monaco.editor.ITextModel) => {
 			}
 		}
 
-		if (line.includes("vector") || line.includes("string")) {
+		if (line.includes("vector") || /\b(std::)?string\b/.test(line)) {
 			const hasVector = lines.some((l) => l.includes("#include <vector>"));
 			const hasString = lines.some((l) => l.includes("#include <string>"));
+			const hasStringH = lines.some((l) => l.includes("#include <string.h>"));
+
 			if (line.includes("vector") && !hasVector && !hasBitsStdcxx) {
 				markers.push({
 					severity: monaco.MarkerSeverity.Error,
@@ -74,13 +76,20 @@ const validateModel = (model: monaco.editor.ITextModel) => {
 					code: "missing-vector",
 				});
 			}
-			if (line.includes("string") && !hasString && !hasBitsStdcxx) {
+			// Only check for C++ string if it's not a C include and not already included
+			if (
+				/\b(std::)?string\b/.test(line) &&
+				!hasString &&
+				!hasBitsStdcxx &&
+				!hasStringH &&
+				!line.includes("#include <string.h>")
+			) {
 				markers.push({
 					severity: monaco.MarkerSeverity.Error,
 					startLineNumber: lineNumber,
-					startColumn: line.indexOf("string"),
+					startColumn: line.search(/\b(std::)?string\b/),
 					endLineNumber: lineNumber,
-					endColumn: line.indexOf("string") + 6,
+					endColumn: line.search(/\b(std::)?string\b/) + 6,
 					message:
 						"Missing #include <string> (or use #include <bits/stdc++.h>)",
 					code: "missing-string",
@@ -138,38 +147,6 @@ const validateModel = (model: monaco.editor.ITextModel) => {
 			}
 		}
 
-		if (line.includes("set") || line.includes("unordered_set")) {
-			const hasSet = lines.some((l) => l.includes("#include <set>"));
-			if (!hasSet) {
-				markers.push({
-					severity: monaco.MarkerSeverity.Error,
-					startLineNumber: lineNumber,
-					startColumn: 1,
-					endLineNumber: lineNumber,
-					endColumn: line.length + 1,
-					message: "Missing #include <set> for set/unordered_set",
-					code: "missing-set",
-				});
-			}
-		}
-
-		if (line.includes("algorithm")) {
-			const hasAlgorithm = lines.some((l) =>
-				l.includes("#include <algorithm>"),
-			);
-			if (!hasAlgorithm) {
-				markers.push({
-					severity: monaco.MarkerSeverity.Error,
-					startLineNumber: lineNumber,
-					startColumn: 1,
-					endLineNumber: lineNumber,
-					endColumn: line.length + 1,
-					message: "Missing #include <algorithm>",
-					code: "missing-algorithm",
-				});
-			}
-		}
-
 		// Track pointer allocations
 		const newMatch = trimmedLine.match(/(\w+)\s*=\s*new\s+\w+/);
 		if (newMatch) {
@@ -187,11 +164,16 @@ const validateModel = (model: monaco.editor.ITextModel) => {
 		}
 
 		// Check for missing semicolons
+		// Remove inline comments for semicolon checking
+		const lineWithoutComments = trimmedLine
+			.replace(/\/\/.*$/, "")
+			.replace(/\/\*.*?\*\//, "")
+			.trim();
 		if (
 			trimmedLine.length > 0 &&
-			!trimmedLine.endsWith(";") &&
-			!trimmedLine.endsWith("{") &&
-			!trimmedLine.endsWith("}") &&
+			!lineWithoutComments.endsWith(";") &&
+			!lineWithoutComments.endsWith("{") &&
+			!lineWithoutComments.endsWith("}") &&
 			!trimmedLine.startsWith("#") &&
 			!trimmedLine.startsWith("//") &&
 			!trimmedLine.startsWith("/*") &&
@@ -201,10 +183,11 @@ const validateModel = (model: monaco.editor.ITextModel) => {
 			!trimmedLine.includes("for") &&
 			!trimmedLine.includes("do") &&
 			!trimmedLine.includes("switch") &&
-			(trimmedLine.includes("=") ||
-				trimmedLine.includes("cout") ||
-				trimmedLine.includes("cin") ||
-				trimmedLine.includes("return"))
+			lineWithoutComments.length > 0 &&
+			(lineWithoutComments.includes("=") ||
+				lineWithoutComments.includes("cout") ||
+				lineWithoutComments.includes("cin") ||
+				lineWithoutComments.includes("return"))
 		) {
 			markers.push({
 				severity: monaco.MarkerSeverity.Error,
@@ -458,12 +441,18 @@ monaco.languages.registerCodeActionProvider("cpp", {
 			}
 		}
 
-		if (line.includes("string")) {
+		if (/\b(std::)?string\b/.test(line)) {
 			const hasString = lines.some((l) => l.includes("#include <string>"));
+			const hasStringH = lines.some((l) => l.includes("#include <string.h>"));
 			const hasBitsStdcxx = lines.some((l) =>
 				l.includes("#include <bits/stdc++.h>"),
 			);
-			if (!hasString && !hasBitsStdcxx) {
+			if (
+				!hasString &&
+				!hasBitsStdcxx &&
+				!hasStringH &&
+				!line.includes("#include <string.h>")
+			) {
 				actions.push({
 					title: "Add #include <string>",
 					kind: "quickfix",
@@ -660,62 +649,6 @@ monaco.languages.registerCodeActionProvider("cpp", {
 										endColumn: 1,
 									},
 									text: "#include <bits/stdc++.h>\n",
-								},
-							},
-						],
-					},
-				});
-			}
-		}
-
-		if (line.includes("set") || line.includes("unordered_set")) {
-			const hasSet = lines.some((l) => l.includes("#include <set>"));
-			if (!hasSet) {
-				actions.push({
-					title: "Add #include <set>",
-					kind: "quickfix",
-					edit: {
-						edits: [
-							{
-								resource: model.uri,
-								versionId: model.getVersionId(),
-								textEdit: {
-									range: {
-										startLineNumber: 1,
-										startColumn: 1,
-										endLineNumber: 1,
-										endColumn: 1,
-									},
-									text: "#include <set>\n",
-								},
-							},
-						],
-					},
-				});
-			}
-		}
-
-		if (line.includes("algorithm")) {
-			const hasAlgorithm = lines.some((l) =>
-				l.includes("#include <algorithm>"),
-			);
-			if (!hasAlgorithm) {
-				actions.push({
-					title: "Add #include <algorithm>",
-					kind: "quickfix",
-					edit: {
-						edits: [
-							{
-								resource: model.uri,
-								versionId: model.getVersionId(),
-								textEdit: {
-									range: {
-										startLineNumber: 1,
-										startColumn: 1,
-										endLineNumber: 1,
-										endColumn: 1,
-									},
-									text: "#include <algorithm>\n",
 								},
 							},
 						],
