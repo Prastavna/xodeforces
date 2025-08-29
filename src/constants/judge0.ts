@@ -89,7 +89,6 @@ export const JUDGE0_STATUS_MAP: Record<
 	14: { name: "Exec Format Error", color: "red" },
 };
 
-export const JUDGE0_BASE_URL = "https://judge0-ce.p.rapidapi.com";
 
 export const DEFAULT_JUDGE0_CONFIG = {
 	baseUrl: JUDGE0_BASE_URL,

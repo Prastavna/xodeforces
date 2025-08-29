@@ -3,20 +3,14 @@
         <template #judge0>
             <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium mb-2">Base URL</label>
-                    <div class="space-y-2">
-                        <div class="flex items-center gap-2">
-                            <UInput v-model="customBaseUrl" placeholder="https://your-judge0-instance.com"
-                                :disabled="!baseurlEditAllowed"
-                                class="flex-1 [&_input]:disabled:bg-gray-200 [&_input]:disabled:cursor-not-allowed"
-                                @keydown.enter="handleCustomBaseUrlChange" />
-                            <UButton v-if="!baseurlEditAllowed" @click="baseurlEditAllowed = !baseurlEditAllowed"
-                                variant="ghost" size="sm" icon="i-heroicons-pencil"
-                                title="Edit Base URL" />
-                            <UButton v-else @click="handleCustomBaseUrlChange" variant="ghost"
-                                size="sm" icon="i-heroicons-check" title="Save Base URL" />
-                        </div>
-                    </div>
+                    <label class="block text-sm font-medium mb-2">Provider</label>
+                    <USelect 
+                        v-model="selectedProvider"
+                        :items="judge0Config.availableProviders"
+                        value-attribute="value"
+                        option-attribute="label"
+                        class="w-full"
+                    />
                 </div>
 
                 <div>
@@ -24,19 +18,33 @@
                         API Key
                     </label>
                     <div class="flex items-center gap-2">
-                        <UInput v-model="judge0ApiKey" :type="showApiKey ? 'text' : 'password'"
-                            placeholder="Enter your API key" class="w-full" @blur="handleApiKeyChange" />
-                        <UButton @click="showApiKey = !showApiKey" variant="ghost" size="sm"
+                      <UInput
+                        v-model="judge0ApiKey"
+                        :type="showApiKey ? 'text' : 'password'"
+                        placeholder="Enter your API key"
+                        class="w-full"
+                      >
+                        <template #trailing>
+                          <UButton
+                            color="neutral"
+                            variant="link"
+                            size="sm"
                             :icon="showApiKey ? 'i-heroicons-eye-slash' : 'i-heroicons-eye'"
-                            :title="showApiKey ? 'Hide API Key' : 'Show API Key'" />
+
+                            :aria-label="showApiKey ? 'Hide password' : 'Show password'"
+                            :aria-pressed="showApiKey"
+                            aria-controls="password"
+                            @click="showApiKey = !showApiKey"
+                          />
+                          </template>
+                        </UInput>
                     </div>
                 </div>
 
                 <div class="flex items-center justify-between pt-2">
                     <div class="flex items-center gap-3">
-                        <UButton @click="testJudge0Connection" :loading="judge0Config.isLoading"
-                            :disabled="!judge0Config.config.baseUrl" size="sm">
-                            Test Connection
+                        <UButton @click="saveAndTestConnection" :loading="judge0Config.isLoading" size="sm">
+                            Save & Test Connection
                         </UButton>
 
                         <div v-if="judge0Config.isConnected" class="flex items-center gap-2 text-green-600">
@@ -50,9 +58,8 @@
                         </div>
                     </div>
                     <div class="text-xs text-primary-300 hover:text-primary-500 mr-2">
-                        <a href="https://ce.judge0.com/#header-get-started" target="_blank"
-                            class="flex items-center gap-2">
-                            Get RapidAPI Key
+                        <a :href="getApiKeyUrl()" target="_blank" class="flex items-center gap-2">
+                            Get {{ selectedProvider === Judge0Providers.RAPIDAPI ? 'RapidAPI' : 'Sulu' }} API Key
                             <UIcon name="i-heroicons-link" class="w-3 h-3" />
                         </a>
                     </div>
@@ -66,15 +73,15 @@
 <script setup lang="ts">
 import { useToast } from "@nuxt/ui/composables/useToast";
 import { ref } from "vue";
+import { Judge0Providers } from "../../../../services/judge0-providers";
 import { useJudge0Config } from "../../../../stores/judge0-config";
 
 const toast = useToast();
 const judge0Config = useJudge0Config();
 
-const baseurlEditAllowed = ref(false);
 const showApiKey = ref(false);
 const judge0ApiKey = ref(judge0Config.config.apiKey || "");
-const customBaseUrl = ref(judge0Config.config.baseUrl || "");
+const selectedProvider = ref(judge0Config.config.provider);
 
 const judge0AccordionItems = [
 	{
@@ -85,49 +92,41 @@ const judge0AccordionItems = [
 	},
 ];
 
-const handleCustomBaseUrlChange = () => {
-	updateJudge0Config({ baseUrl: customBaseUrl.value.trim() });
-	baseurlEditAllowed.value = false;
-};
-
-const handleApiKeyChange = () => {
-	if (judge0ApiKey.value.trim() !== judge0Config.config.apiKey) {
-		updateJudge0Config({ apiKey: judge0ApiKey.value });
+const getApiKeyUrl = () => {
+	if (selectedProvider.value === Judge0Providers.RAPIDAPI) {
+		return "https://rapidapi.com/judge0-official/api/judge0-ce/playground";
+	} else {
+		return "https://platform.sulu.sh/apis/judge0/judge0-ce/readme";
 	}
 };
 
-const updateJudge0Config = async (config: {
-	baseUrl?: string;
-	apiKey?: string;
-}) => {
+const saveAndTestConnection = async () => {
 	try {
-		await judge0Config.updateConfig(config);
-		toast.add({
-			title: "Judge0 settings updated",
-			description: "Judge0 configuration updated successfully",
-			color: "success",
+		// Save current settings
+		await judge0Config.updateConfig({
+			provider: selectedProvider.value,
+			apiKey: judge0ApiKey.value,
 		});
+
+		// Test connection will be called automatically by updateConfig
+		if (judge0Config.isConnected) {
+			toast.add({
+				title: "Success",
+				description: "Settings saved and connection successful",
+				color: "success",
+			});
+		} else {
+			toast.add({
+				title: "Settings saved",
+				description:
+					judge0Config.error || "Settings saved but connection failed",
+				color: "warning",
+			});
+		}
 	} catch (error) {
 		toast.add({
-			title: "Failed to update Judge0 settings",
+			title: "Failed to save settings",
 			description: error instanceof Error ? error.message : "Unknown error",
-			color: "error",
-		});
-	}
-};
-
-const testJudge0Connection = async () => {
-	const success = await judge0Config.testConnection();
-	if (success) {
-		toast.add({
-			title: "Connection successful",
-			description: "Successfully connected to Judge0 API",
-			color: "success",
-		});
-	} else {
-		toast.add({
-			title: "Connection failed",
-			description: judge0Config.error || "Failed to connect to Judge0 API",
 			color: "error",
 		});
 	}

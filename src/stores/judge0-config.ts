@@ -1,7 +1,11 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { DEFAULT_JUDGE0_CONFIG } from "../constants/judge0";
-import { type Judge0Config, Judge0Service } from "../services/judge0";
+import {
+	createJudge0Provider,
+	JUDGE0_PROVIDERS,
+	type Judge0Config,
+} from "../services/judge0-providers";
 import { storage } from "../services/storage";
 
 const STORAGE_KEY = "judge0-config";
@@ -12,10 +16,9 @@ export const useJudge0Config = defineStore("judge0-config", () => {
 	const isLoading = ref(false);
 	const error = ref<string | null>(null);
 
-	const judge0Service = computed(() => new Judge0Service(config.value));
-	const hasValidConfig = computed(
-		() => !!config.value.baseUrl && !!config.value.apiKey,
-	);
+	const judge0Provider = computed(() => createJudge0Provider(config.value));
+	const hasValidConfig = computed(() => !!config.value.apiKey);
+	const availableProviders = computed(() => JUDGE0_PROVIDERS);
 
 	const loadConfig = () => {
 		try {
@@ -41,17 +44,12 @@ export const useJudge0Config = defineStore("judge0-config", () => {
 	};
 
 	const testConnection = async (): Promise<boolean> => {
-		if (!config.value.baseUrl) {
-			error.value = "Base URL is required";
-			return false;
-		}
-
 		isLoading.value = true;
 		error.value = null;
 
 		try {
-			const service = new Judge0Service(config.value);
-			const connected = await service.testConnection();
+			const provider = createJudge0Provider(config.value);
+			const connected = await provider.testConnection();
 			isConnected.value = connected;
 
 			if (!connected) {
@@ -87,7 +85,8 @@ export const useJudge0Config = defineStore("judge0-config", () => {
 	return {
 		config: computed(() => config.value),
 		hasValidConfig,
-		judge0Service,
+		judge0Provider,
+		availableProviders,
 		isConnected: computed(() => isConnected.value),
 		isLoading: computed(() => isLoading.value),
 		error: computed(() => error.value),

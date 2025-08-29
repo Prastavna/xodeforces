@@ -43,7 +43,7 @@ export const useExecutionStore = defineStore("execution", () => {
 		result.value = null;
 
 		try {
-			const submissionResult = await judge0Config.judge0Service.executeCode(
+			const submissionResult = await judge0Config.judge0Provider.executeCode(
 				editorConfig.code,
 				currentLanguageId.value,
 				customInput.value || undefined,
