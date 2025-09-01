@@ -8,8 +8,9 @@
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
   ![Version](
 https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FPrastavna%2Fxodeforces%2Frefs%2Fheads%2Fmain%2Fpackage.json&query=%24.version&style=flat&label=version)
-  [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue.svg)](https://chromewebstore.google.com/detail/xodeforces/lnfgjljnmoickkgbjedecbkcmhhdncpk)
-  
+  [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/lnfgjljnmoickkgbjedecbkcmhhdncpk)](https://chromewebstore.google.com/detail/xodeforces/lnfgjljnmoickkgbjedecbkcmhhdncpk)
+  [![Firefox Add-on Store](https://img.shields.io/amo/v/xodeforces)](https://addons.mozilla.org/en-US/firefox/addon/xodeforces/)
+
   <p>🚀 Available for Chrome • 🦊 Firefox Support</p>
   
   ![Demo](./public/screenshot.png)  
@@ -17,8 +18,9 @@ https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubuserconten
 </div>
 
 > [!WARNING]
-> Firefox has a limit to file sizes of 5MB. That's why the Firefox version of Xodeforces is not available in Firefox Addon Store. You can install it from the [releases](https://github.com/Prastavna/xodeforces/releases/) page
-> We are waiting for this PR to be merged: [PR](https://github.com/mozilla/addons-linter/pull/5765)
+> Firefox has a limit to file sizes of 5MB. That's why the Firefox version of Xodeforces does not include the language features for Javascript & Typescript
+>
+> We raised this [PR](https://github.com/mozilla/addons-linter/pull/5765) to get the limit increased but it was declined.
 
 ## ✨ Key Features
 
@@ -48,15 +50,10 @@ https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubuserconten
 
 ## 📦 Installation
 
-### Chrome Extension
-1. **Install from Chrome Web Store**: [Download Xodeforces](https://chromewebstore.google.com/detail/xodeforces/lnfgjljnmoickkgbjedecbkcmhhdncpk)
-2. **Visit Codeforces**: Navigate to any problem page on [codeforces.com](https://codeforces.com)
-3. **Start Coding**: The editor appears automatically below the problem statement
+**Chrome**: [Download Xodeforces](https://chromewebstore.google.com/detail/xodeforces/lnfgjljnmoickkgbjedecbkcmhhdncpk)
 
-### Firefox Add-on
-1. **Download**: Get the latest `.xpi` from our [releases page](https://github.com/prastavna/xodeforces/releases)
-2. **Install**: Open `about:addons` → Settings gear → "Install Add-on From File"
-3. **Activate**: Visit any Codeforces problem to start using the editor
+**Firefox**: [Download Xodeforces](https://addons.mozilla.org/en-US/firefox/addon/xodeforces/)
+
 
 ## 🏃‍♂️ Quick Start
 
@@ -67,6 +64,7 @@ https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubuserconten
 5. **Submit**: Copy your solution or submit directly through Codeforces
 
 ## 🔐 How to setup Judge0 Key
+
 1. Start a free plan of [Judge0 Api](https://rapidapi.com/judge0-official/api/judge0-ce/playground/apiendpoint_489fe32c-7191-4db3-b337-77d0d3932807)
 2. Get the api key from the playground. And add it to the Judge0 settings.
 3. Test Connection to make sure you have setup the key properly.
@@ -74,9 +72,11 @@ https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubuserconten
 ## 🛠️ Development
 
 ### Prerequisites
+
 - [Bun](https://bun.sh/) v1.2.19+
 
 ### Quick Setup
+
 ```bash
 # Clone and setup
 git clone https://github.com/prastavna/xodeforces.git
@@ -89,12 +89,14 @@ bun run dev:firefox  # Firefox development
 ```
 
 ### Loading Development Extension
+
 | Browser | Steps |
 |---------|-------|
-| **Chrome** | 1. Open `chrome://extensions/` <br> 2. Enable "Developer mode" <br> 3. Click "Load unpacked" → Select `dist/` folder |
-| **Firefox** | 1. Open `about:debugging#/runtime/this-firefox` <br> 2. Click "Load Temporary Add-on" <br> 3. Select any file in `dist/` folder |
+| **Chrome** | 1. Open `chrome://extensions/` <br> 2. Enable "Developer mode" <br> 3. Click "Load unpacked" → Select `dist/chrome/` folder |
+| **Firefox** | 1. Open `about:debugging#/runtime/this-firefox` <br> 2. Click "Load Temporary Add-on" <br> 3. Select any file in `dist/firefox/` folder |
 
 ### Build Commands
+
 ```bash
 bun run build           # Build for both browsers
 bun run build:chrome    # Chrome production build
@@ -106,6 +108,7 @@ bun run check:fix       # Format code with Biome
 ## 🏗️ Architecture
 
 ### Core Technologies
+
 | Category | Technology | Purpose |
 |----------|------------|---------|
 | **Framework** | [Vue.js 3](https://vuejs.org/) + TypeScript | Reactive UI with type safety |
@@ -113,6 +116,7 @@ bun run check:fix       # Format code with Biome
 | **Runtime** | [Bun](https://bun.sh/) | High-performance JavaScript runtime |
 
 ### Key Integrations
+
 | Component | Technology | Description |
 |-----------|------------|-------------|
 | **Editor** | [Monaco Editor](https://microsoft.github.io/monaco-editor/) | VS Code-grade editing experience |
@@ -121,6 +125,7 @@ bun run check:fix       # Format code with Biome
 | **HTTP Client** | [ofetch](https://github.com/unjs/ofetch) | Modern fetch API wrapper |
 
 ### Development Tools
+
 - **Code Quality**: [Biome](https://biomejs.dev/) for formatting and linting  
 - **Extension Framework**: [CRXJS](https://crxjs.dev/) for browser extension development
 - **UI Framework**: [Nuxt UI](https://ui.nuxt.com/) for consistent components
@@ -130,6 +135,7 @@ bun run check:fix       # Format code with Biome
 We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
 **Quick Start for Contributors**:
+
 1. 🍴 Fork the repository
 2. 🌿 Create your feature branch (`git checkout -b feature/amazing-feature`)
 3. 📝 Make your changes and test thoroughly
@@ -140,7 +146,8 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 **License**: MIT License - see [LICENSE](LICENSE) for details
 
-**Support**: 
+**Support**:
+
 - 🐛 **Bug Reports**: [Open an issue](https://github.com/prastavna/xodeforces/issues)
 - 💡 **Feature Requests**: [Request a feature](https://github.com/prastavna/xodeforces/issues)
 - 📧 **General Questions**: Use GitHub Discussions
